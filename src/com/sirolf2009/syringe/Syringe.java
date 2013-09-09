@@ -61,7 +61,7 @@ public class Syringe {
                 .setRotation(-1.12f, 0.16f, 0f).setPosition(-11.38f, 11.36f, 17.95f).setFieldOfView(60).build();
         camera.applyOptimalStates();
         camera.applyPerspectiveMatrix();
-        glShadeModel(GL_SMOOTH);
+        glShadeModel(GL_SMOOTH );
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_LIGHTING);
         glLightModel(GL_LIGHT_MODEL_AMBIENT, BufferTools.asFlippedFloatBuffer(new float[]{0.5f, 0.5f, 0.5f, 1f}));
