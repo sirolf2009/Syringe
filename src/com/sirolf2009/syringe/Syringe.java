@@ -1,34 +1,12 @@
 package com.sirolf2009.syringe;
 
-import static org.lwjgl.opengl.GL11.GL_BACK;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_COLOR_MATERIAL;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_DIFFUSE;
-import static org.lwjgl.opengl.GL11.GL_FILL;
-import static org.lwjgl.opengl.GL11.GL_FRONT;
-import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL11.GL_LIGHTING;
-import static org.lwjgl.opengl.GL11.GL_LIGHT_MODEL_AMBIENT;
-import static org.lwjgl.opengl.GL11.GL_SMOOTH;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glColorMaterial;
-import static org.lwjgl.opengl.GL11.glCullFace;
-import static org.lwjgl.opengl.GL11.glDeleteLists;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glLightModel;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glPolygonMode;
-import static org.lwjgl.opengl.GL11.glShadeModel;
+import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-
+import org.lwjgl.opengl.GL11;
 import com.sirolf2009.syringe.client.renderers.ModelRenderSimple;
 import com.sirolf2009.syringe.client.renderers.RenderManager;
 import com.sirolf2009.syringe.util.BufferTools;
@@ -58,7 +36,7 @@ public class Syringe {
     	renderManager = new RenderManager();
     	renderManager.registerRenderer(new ModelRenderSimple("models/ak.obj"));
     	camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / Display.getHeight())
-                .setRotation(-1.12f, 0.16f, 0f).setPosition(-11.38f, 11.36f, 17.95f).setFieldOfView(60).build();
+                .setRotation(0.0f, 0.0f, 0.0f).setPosition(2.0F, 0.0f, 0.0f).setFieldOfView(80).build();
         camera.applyOptimalStates();
         camera.applyPerspectiveMatrix();
         glShadeModel(GL_SMOOTH );
@@ -92,6 +70,7 @@ public class Syringe {
         glLoadIdentity();
         camera.applyTranslations();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        GL11.glScalef(10, 10, 10);
         renderManager.renderAll();
     }
 
