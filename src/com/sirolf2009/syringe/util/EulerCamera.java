@@ -136,6 +136,9 @@ public final class EulerCamera implements Camera {
 
     /** Processes mouse input and converts it in to camera movement. */
     public void processMouse() {
+    	if(!Mouse.isGrabbed()) {
+    		return;
+    	}
         final float MAX_LOOK_UP = 90;
         final float MAX_LOOK_DOWN = -90;
         float mouseDX = Mouse.getDX() * 0.16f;
@@ -162,6 +165,9 @@ public final class EulerCamera implements Camera {
      * @param mouseSpeed the speed (sensitivity) of the mouse, 1.0 should suffice
      */
     public void processMouse(float mouseSpeed) {
+    	if(!Mouse.isGrabbed()) {
+    		return;
+    	}
         final float MAX_LOOK_UP = 90;
         final float MAX_LOOK_DOWN = -90;
         float mouseDX = Mouse.getDX() * mouseSpeed * 0.16f;
@@ -190,6 +196,9 @@ public final class EulerCamera implements Camera {
      * @param maxLookDown the maximum angle in degrees at which you can look down
      */
     public void processMouse(float mouseSpeed, float maxLookUp, float maxLookDown) {
+    	if(!Mouse.isGrabbed()) {
+    		return;
+    	}
         float mouseDX = Mouse.getDX() * mouseSpeed * 0.16f;
         float mouseDY = Mouse.getDY() * mouseSpeed * 0.16f;
         if (yaw + mouseDX >= 360) {

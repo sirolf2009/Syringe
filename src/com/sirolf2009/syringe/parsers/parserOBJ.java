@@ -1,5 +1,6 @@
 package com.sirolf2009.syringe.parsers;
 
+import com.sirolf2009.syringe.client.models.AABB;
 import com.sirolf2009.syringe.client.models.Model3D;
 import java.io.*;
 
@@ -44,6 +45,12 @@ public class parserOBJ {
 							model.bottompoint = coords[1];
 							model.nearpoint = coords[2];
 							model.farpoint = coords[2];
+							model.posX1 = coords[0];
+							model.posY1 = coords[1];
+							model.posZ1 = coords[2];
+							model.posX2 = coords[0];
+							model.posY2 = coords[1];
+							model.posZ2 = coords[2];
 							firstpass = false;
 						}
 						if (coords[0] > model.rightpoint) {
@@ -63,6 +70,24 @@ public class parserOBJ {
 						}
 						if (coords[2] < model.farpoint) {
 							model.farpoint = coords[2];
+						}
+						if(coords[0] < model.posX1) {
+							model.posX1 = coords[0];
+						}
+						if(coords[1] < model.posY1) {
+							model.posY1 = coords[1];
+						}
+						if(coords[2] < model.posZ1) {
+							model.posZ1 = coords[2];
+						}
+						if(coords[0] > model.posX2) {
+							model.posX2 = coords[0];
+						}
+						if(coords[1] > model.posY2) {
+							model.posY2 = coords[1];
+						}
+						if(coords[2] > model.posZ2) {
+							model.posZ2 = coords[2];
 						}
 						model.vertexsets.add(coords);
 					}
@@ -111,6 +136,7 @@ public class parserOBJ {
 					}
 				}
 			}
+			model.AABB = AABB.createAABBFromModel(model);
 			reader.close();
 			return model;
 		} catch (IOException e) {

@@ -52,4 +52,21 @@ public class ModelRenderSimple implements IModelRenderer {
 		glDeleteLists(modelDisplayList, 1);
 	}
 
+	@Override
+	public Model3D getModel() {
+		return model;
+	}
+	
+	public boolean intersects(ModelRenderSimple other) {
+		if (getModel().bottompoint < other.getModel().bottompoint || 
+				getModel().toppoint < other.getModel().toppoint || 
+				getModel().leftpoint > other.getModel().leftpoint || 
+				getModel().rightpoint > other.getModel().rightpoint ||
+				getModel().nearpoint > other.getModel().nearpoint || 
+				getModel().farpoint > other.getModel().farpoint) {
+			return false;
+		}
+		return true;
+	}
+
 }
