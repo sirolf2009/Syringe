@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.TrueTypeFont;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -27,6 +28,21 @@ public class RenderManager {
 		this.syringe = syringe;
 		Font awtFont = new Font("Verdana", Font.BOLD, 24);
 		font = new TrueTypeFont(awtFont, false);
+	}
+
+	public void drawGUI() {
+		setup2D();
+		glTranslated(Display.getWidth()/2, Display.getHeight()/2, 0);
+		glBegin(GL_LINES);
+		glVertex2f(0.0f, 100f);
+		glVertex2f(0.0f, -100f);
+		glVertex2f(-100, 0.0f);
+		glVertex2f(100, 0.0f);
+		glEnd();
+		SimpleText.drawString("X: "+syringe.camera.x(), -syringe.screenWidth/2, syringe.screenHeight/2-10);
+		SimpleText.drawString("Y: "+syringe.camera.y(), -syringe.screenWidth/2, syringe.screenHeight/2-20);
+		SimpleText.drawString("Z: "+syringe.camera.z(), -syringe.screenWidth/2, syringe.screenHeight/2-30);
+		setup3D();
 	}
 
 	public void drawSpecial(int flag) {
@@ -50,6 +66,28 @@ public class RenderManager {
 			glEnd();
 			switchTo3D();
 		}
+	}
+
+	public void setup2D() {
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glPushMatrix();
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, syringe.screenWidth, 0, syringe.screenHeight, -1, 1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		GL11.glPushMatrix();
+		GL11.glLoadIdentity();
+	}
+
+	public void setup3D() {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glPopMatrix();
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glPopMatrix();
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 	public void switchTo2D() {
@@ -79,7 +117,7 @@ public class RenderManager {
 			modelRenderers.add((IModelRenderer) renderer);
 		}
 	}
-	
+
 	public void render(int flag) {
 		if((flag & 1) == 1) {
 			for(Entity entity : syringe.world.entities) {

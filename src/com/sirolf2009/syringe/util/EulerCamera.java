@@ -458,7 +458,7 @@ public final class EulerCamera implements Camera {
         glTranslatef(-x, -y, -z);
         glPopAttrib();
     }
-
+    
     /**
      * Sets the rotation of the camera.
      *

@@ -19,10 +19,13 @@ import com.sirolf2009.syringe.world.entity.EntityTest;
 
 public class Syringe {
 
-    private Camera camera;
+    public Camera camera;
     private int modelDisplayList;
     private RenderManager renderManager;
     public World world;
+    
+    public final int screenWidth = 800;
+    public final int screenHeight = 600;
     
     Entity entity;
 
@@ -32,7 +35,6 @@ public class Syringe {
         init();
         while (!Display.isCloseRequested()) {
         	long newTime = System.currentTimeMillis();
-        	entity.setPosX(2F);
         	world.update(newTime - oldTime);
         	oldTime = newTime;
             checkInput();
@@ -47,19 +49,19 @@ public class Syringe {
     private void init() {
     	renderManager = new RenderManager(this);
     	camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / Display.getHeight())
-                .setRotation(0.0f, 0.0f, 0.0f).setPosition(2.0F, 0.0f, 0.0f).setFieldOfView(80).build();
+                .setRotation(0.0f, 0.0f, 0.0f).setPosition(2.0F, 2.0f, 0.0f).setFieldOfView(80).build();
         camera.applyOptimalStates();
         camera.applyPerspectiveMatrix();
         world = new World();
         
         entity = new EntityTest(world, new EntityRenderer("models/ak.obj"));
-        entity.setPosX(2);
-        EntityRenderer renderer = new EntityRenderer("models/ak.obj");
-        EntityTest.setRenderer(renderer);
-        renderManager.registerEntityRenderer(entity, renderer);
+        entity.setPosX(0.1F);
+        entity.setPosY(2.1F);
+        entity.setPosZ(0.1F);
         world.addEntity(entity);
-        Entity entity2 = new EntityTest(world);
+        Entity entity2 = new EntityTest(world, new EntityRenderer("models/ak.obj"));
         world.addEntity(entity2);
+        entity2.setPosY(2);
         
         glShadeModel(GL_SMOOTH );
         glEnable(GL_DEPTH_TEST);
@@ -87,20 +89,21 @@ public class Syringe {
     }
 
     private void render() {
-    	entity.setPosX(1.0F);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_TEXTURE_2D);
         glLoadIdentity();
         camera.applyTranslations();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         GL11.glScalef(10, 10, 10);
+        GL11.glCallList(world.groundList);
         renderManager.render(1);
+        renderManager.drawGUI();
         //renderManager.drawSpecial(1 | 2);
     }
 
     private void initDisplay() {
         try {
-            Display.setDisplayMode(new DisplayMode(800, 600));
+            Display.setDisplayMode(new DisplayMode(screenWidth, screenHeight));
             Display.setVSyncEnabled(true);
             Display.setTitle("Syringe");
             Display.create();
