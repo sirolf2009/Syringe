@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+
 import com.sirolf2009.syringe.client.models.Model3D;
 import com.sirolf2009.syringe.parsers.parserOBJ;
 

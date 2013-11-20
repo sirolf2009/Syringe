@@ -33,8 +33,9 @@ public abstract class Entity {
 		AABB.setLocation(posX, posY, posZ);
 		if(AABB.intersects(world.ground)) {
 			velX *= .9;
-			velY += .1;
+			velY = 0;
 			velZ *= .9;
+			System.out.println("clip");
 		} else {
 			velY -= .005;
 			System.out.println("noclip");

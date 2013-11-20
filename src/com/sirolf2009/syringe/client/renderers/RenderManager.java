@@ -88,6 +88,10 @@ public class RenderManager {
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_LIGHTING);
+		glEnable(GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT, GL_DIFFUSE);
+		glEnable(GL_TEXTURE_2D);
+		
 	}
 
 	public void switchTo2D() {

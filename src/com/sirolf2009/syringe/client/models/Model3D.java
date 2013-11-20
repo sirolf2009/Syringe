@@ -69,6 +69,7 @@ public class Model3D {
 	}
 
 	public void opengldraw() {
+		texture.bind();
 		GL11.glCallList(objectlist);
 	}
 
