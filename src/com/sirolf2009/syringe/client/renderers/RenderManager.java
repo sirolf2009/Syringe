@@ -1,6 +1,5 @@
 package com.sirolf2009.syringe.client.renderers;
 
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,28 +7,39 @@ import java.util.Map;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.TrueTypeFont;
 import static org.lwjgl.opengl.GL11.*;
 
 import com.sirolf2009.syringe.Syringe;
 import com.sirolf2009.syringe.world.entity.Entity;
 
+/**
+ * The RenderManager Class
+ * Stores the renderers
+ * 
+ * @author sirolf2009
+ *
+ */
 public class RenderManager {
 
-	TrueTypeFont font;
-	Syringe syringe;
+	/** The {@link Syringe} reference */
+	private Syringe syringe;
 
+	/** A list containing all the registered {@link IModelRenderer} */
 	private List<IModelRenderer> modelRenderers = new ArrayList<>();
 
+	/** A map containing all the registered {@link IEntityRenderer} */
 	private Map<Entity, IEntityRenderer> entityRenderers = new HashMap<Entity, IEntityRenderer>();
 
+	/**
+	 * The constructor
+	 * 
+	 * @param syringe - The main syringe thread
+	 */
 	public RenderManager(Syringe syringe) {
 		this.syringe = syringe;
-		Font awtFont = new Font("Verdana", Font.BOLD, 24);
-		font = new TrueTypeFont(awtFont, false);
 	}
 
+	/** draws the HUD */
 	public void drawGUI() {
 		setup2D();
 		glTranslated(Display.getWidth()/2, Display.getHeight()/2, 0);
@@ -45,13 +55,13 @@ public class RenderManager {
 		setup3D();
 	}
 
+	@Deprecated
 	public void drawSpecial(int flag) {
 		if((flag & 1) == 1) {
 			switchTo2D();
 			glScalef(100, 100, 100);
 			glRotated(90, 0, 1, 0);
 			glTranslated(Display.getWidth()/2, Display.getHeight()-10, 0);
-			font.drawString(10, 10, "FPS: ");
 			switchTo3D();
 		}
 		if((flag & 2) == 2) {
@@ -68,6 +78,7 @@ public class RenderManager {
 		}
 	}
 
+	/** Sets OpenGL up to render 2D */
 	public void setup2D() {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -81,6 +92,7 @@ public class RenderManager {
 		GL11.glLoadIdentity();
 	}
 
+	/** Sets OpenGL up to render 3D */
 	public void setup3D() {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glPopMatrix();
@@ -94,6 +106,7 @@ public class RenderManager {
 		
 	}
 
+	@Deprecated
 	public void switchTo2D() {
 		glMatrixMode(GL11.GL_PROJECTION);
 		glPushMatrix();
@@ -106,6 +119,7 @@ public class RenderManager {
 		glDisable(GL11.GL_LIGHTING);
 	}
 
+	@Deprecated
 	public void switchTo3D() {
 		glEnable(GL_LIGHTING);
 		glEnable(GL_DEPTH_TEST);
@@ -116,12 +130,22 @@ public class RenderManager {
 		glPopMatrix();
 	}
 
+	/**
+	 * Register a renderer
+	 * @param renderer
+	 */
 	public void registerRenderer(Object renderer) {
 		if(renderer instanceof IModelRenderer) {
 			modelRenderers.add((IModelRenderer) renderer);
 		}
 	}
 
+	/**
+	 * Render using bit flags
+	 * 1 - Entities
+	 * 
+	 * @param flag - The bit flags
+	 */
 	public void render(int flag) {
 		if((flag & 1) == 1) {
 			for(Entity entity : syringe.world.entities) {
@@ -130,23 +154,35 @@ public class RenderManager {
 			}
 		}
 	}
-
+	
+	/** Render all the models */
 	public void renderAll() {
 		for(IModelRenderer renderer : modelRenderers) {
 			renderer.renderModel();
 		}
 	}
 
+	/** Dispose every model */
 	public void cleanUp() {
 		for(IModelRenderer renderer : modelRenderers) {
 			renderer.disposeModel();
 		}
 	}
 
+	/** 
+	 * Register a {@link IModelRenderer} 
+	 * 
+	 * @param renderer - The {@link IModelRenderer} to be registered
+	 */
 	public void registerRenderer(IModelRenderer renderer) {
 		modelRenderers.add(renderer);
 	}
 
+	/** 
+	 * Register a {@link IEntityRenderer} 
+	 * 
+	 * @param renderer - The {@link IEntityRenderer} to be registered
+	 */
 	public void registerEntityRenderer(Entity entity, IEntityRenderer renderer) {
 		entityRenderers.put(entity, renderer);
 		modelRenderers.add(renderer);

@@ -2,6 +2,13 @@ package com.sirolf2009.syringe.client.models;
 
 import org.lwjgl.util.vector.Vector3f;
 
+/**
+ * The AABB class
+ * Used for collision detection
+ * 
+ * @author sirolf2009
+ *
+ */
 public class AABB {
 
 	public float posX1;
@@ -15,6 +22,11 @@ public class AABB {
 	public float depth;
 	public Vector3f center;
 	
+	/** 
+	 * The constructor 
+	 * 
+	 * @param The bottom-left 
+	 */
 	public AABB(float posX1, float posY1, float posZ1, float posX2, float posY2, float posZ2) {
 		this.posX1 = posX1;
 		this.posY1 = posY1;
@@ -28,6 +40,11 @@ public class AABB {
 		center = new Vector3f(posX1 + width/2, posY1 + height/2, posZ1 + depth/2);
 	}
 	
+	/**
+     * Check if this AABB intersects with another
+     * 
+     * @return true if intersecting, false if not
+     */
 	public boolean intersects(AABB other) {
 		if(Math.abs(center.x - other.center.x) < width/2 + other.width/2) {
 			if(Math.abs(center.y - other.center.y) < height/2 + other.height/2) {
@@ -39,6 +56,13 @@ public class AABB {
 		return false;
 	}
 	
+	/**
+	 * Apply translation to the AABB
+	 * 
+	 * @param tranX - delta x
+	 * @param tranY - delta y
+	 * @param tranZ - delta z
+	 */
 	public void applyTranslation(float tranX, float tranY, float tranZ) {
 		this.posX1 += tranX;
 		this.posY1 += tranY;
@@ -48,6 +72,13 @@ public class AABB {
 		this.posZ2 += tranZ;
 	}
 	
+	/**
+	 * Set the location of the AABB
+	 * 
+	 * @param posX - position x
+	 * @param posY - position y
+	 * @param posZ - position z
+	 */
 	public void setLocation(float posX, float posY, float posZ) {
 		this.posX1 = posX;
 		this.posY1 = posY;
@@ -58,6 +89,11 @@ public class AABB {
 		center = new Vector3f(posX1 + width/2, posY1 + height/2, posZ1 + depth/2);
 	}
 	
+	/**
+	 * Create an AABB from a {@link Model3D}
+	 * 
+	 * @return the generated AABB
+	 */
 	public static AABB createAABBFromModel(Model3D model) {
 		return new AABB(model.posX1, model.posY1, model.posZ1, model.posX2, model.posY2, model.posZ2);
 	}

@@ -17,18 +17,35 @@ import com.sirolf2009.syringe.world.World;
 import com.sirolf2009.syringe.world.entity.Entity;
 import com.sirolf2009.syringe.world.entity.EntityTest;
 
+/**
+ * The main Syringe class
+ * 
+ * @author sirolf2009
+ *
+ */
 public class Syringe {
 
+	/** The camera used to move the world */
     public Camera camera;
+    
+    @Deprecated
+    /** Not sure what this was used for :3 */
     private int modelDisplayList;
+    
+    /** The rendermanager */
     private RenderManager renderManager;
+    
+    /** The world */
     public World world;
     
+    /** The screen's width */
     public final int screenWidth = 800;
+    /** The screen's height */
     public final int screenHeight = 600;
     
     Entity entity;
 
+    /** The constructor */
     public Syringe() {
     	long oldTime = System.currentTimeMillis();
         initDisplay();
@@ -46,7 +63,8 @@ public class Syringe {
         System.exit(0);
     }
 
-    private void init() {
+    /** Main init */
+    public void init() {
     	renderManager = new RenderManager(this);
     	camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / Display.getHeight())
                 .setRotation(0.0f, 0.0f, 0.0f).setPosition(2.0F, 2.0f, 0.0f).setFieldOfView(80).build();
@@ -73,9 +91,10 @@ public class Syringe {
         glColorMaterial(GL_FRONT, GL_DIFFUSE);
     }
 
+    /** Processes camera movement */
     private void checkInput() {
         camera.processMouse(1, 80, -80);
-        camera.processKeyboard(16, 2, 2, 2);
+        camera.processKeyboard(16, 2, 8, 2);
         if (Mouse.isButtonDown(0)) {
             Mouse.setGrabbed(true);
         } else if (Mouse.isButtonDown(1)) {
@@ -83,11 +102,13 @@ public class Syringe {
         }
     }
 
+    /** clean up */
     private void cleanUp() {
         glDeleteLists(modelDisplayList, 1);
         Display.destroy();
     }
 
+    /** Clears the screen and renders the registered models */
     private void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_TEXTURE_2D);
@@ -101,6 +122,7 @@ public class Syringe {
         //renderManager.drawSpecial(1 | 2);
     }
 
+    /** Initializes the frame */
     private void initDisplay() {
         try {
             Display.setDisplayMode(new DisplayMode(screenWidth, screenHeight));
@@ -114,6 +136,7 @@ public class Syringe {
         }
     }
     
+    /** Main method */
     public static void main(String[] args) {
         new Syringe();
     }

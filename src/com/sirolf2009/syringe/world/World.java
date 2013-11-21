@@ -15,19 +15,30 @@ import com.sirolf2009.syringe.parsers.parserOBJ;
 import com.sirolf2009.syringe.world.entity.Entity;
 import com.sirolf2009.syringe.world.entity.EntityLiving;
 
+/**
+ * The World Class
+ * Contains all entities and handles entity updating
+ * 
+ * @author sirolf2009
+ *
+ */
 public class World {
 	
+	/** The {@link AABB} from the ground */
 	public AABB ground;
+	/** The OpenGL object list from the ground */
 	public int groundList;
+	/** All entities currently in the world */
 	public List<Entity> entities = new ArrayList<Entity>();
+	/** Entities that have died, will be removed after a tick */
 	private List<Entity> deadEntities = new ArrayList<Entity>();
 	
+	/** The constructor */
 	public World() {
 		setupGround();
-		System.out.println(ground.posX1+", "+ground.posY1+", "+ground.posZ1);
-		System.out.println(ground.posX2+", "+ground.posY2+", "+ground.posZ2);
 	}
 	
+	/** Creates a ground from models/ground.obj */
 	public void setupGround() {
 		try {
 			Model3D groundModel = parserOBJ.loadModel(new File(getClass().getClassLoader().getResource("models/ground.obj").toURI()));
@@ -50,6 +61,7 @@ public class World {
 		}
 	}
 	
+	/** Updates all entities, then removes all dead entities */
 	public synchronized void update(long delta) {
 		for(Entity entity : entities) {
 			entity.getRenderer().setEntity(entity);
@@ -66,10 +78,20 @@ public class World {
 		deadEntities.clear();
 	}
 	
+	/** 
+	 * Remove an entity from this world
+	 * 
+	 * @param entity - The entity to be removed
+	 */
 	public synchronized void removeEntity(Entity entity) {
 		deadEntities.add(entity);
 	}
 	
+	/** 
+	 * Adds an entity to this world
+	 * 
+	 * @param entity - The entity to be added
+	 */
 	public synchronized void addEntity(Entity entity) {
 		entities.add(entity);
 	}

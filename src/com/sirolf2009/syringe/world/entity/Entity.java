@@ -8,24 +8,43 @@ import com.sirolf2009.syringe.world.World;
 
 public abstract class Entity {
 
+	/** The {@link AABB} from this entity */
 	private AABB AABB;
 
+	/** The entity's {@link World} */
 	private World world;
+	/** The X position */
 	private float posX;
+	/** The Y position */
 	private float posY;
+	/** The Z position */
 	private float posZ;
+	/** The X velocity */
 	private float velX;
+	/** The Y velocity */
 	private float velY;
+	/** The Z velocity */
 	private float velZ;
 
+	/** The entity's renderer */
 	private IEntityRenderer renderer;
 
+	/** The constructor
+	 * 
+	 * @param world - The world to put the entity in
+	 * @param renderer - The renderer
+	 */
 	public Entity(World world, IEntityRenderer renderer) {
 		this.world = world;
 		setRenderer(renderer);
 		AABB = getRenderer().getModel().AABB;
 	}
-
+	
+	/**
+	 * Updated the entity's position and checks for collision
+	 * 
+	 * @param delta - The amount of time since the last tick
+	 */
 	public void update(long delta) {
 		posX += velX;
 		posY += velY;
@@ -52,14 +71,20 @@ public abstract class Entity {
 		velZ *= 0.5;
 	}
 
+	/**
+	 * calculate the distance to another {@link AABB}
+	 * 
+	 * @param AABB - The other {@link AABB}
+	 * @return {@link Vector3f} - A vector containing the distance
+	 */
 	public Vector3f getDistanceTo(AABB AABB) {
 		float xAxis = Math.abs(getAABB().center.x - AABB.center.x); //distance between centers
 		float yAxis = Math.abs(getAABB().center.y - AABB.center.y); //distance between centers
 		float zAxis = Math.abs(getAABB().center.z - AABB.center.z); //distance between centers
 
 	    float cw = getAABB().width/2 + AABB.width/2; //combined width
-	    float ch = getAABB().height/2 + AABB.height/2; //combined width
-	    float cd = getAABB().depth/2 + AABB.depth/2; //combined width
+	    float ch = getAABB().height/2 + AABB.height/2; //combined height
+	    float cd = getAABB().depth/2 + AABB.depth/2; //combined depth
 
 	    //early exit
 	    if(xAxis > cw) return null;
@@ -84,6 +109,7 @@ public abstract class Entity {
 		return distance;*/
 	}
 
+	/** Returns an entity that this entity is colliding with */
 	private Entity checkColliding() {
 		for(Entity entity : getWorld().entities) {
 			if(entity == this) {

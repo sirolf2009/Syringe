@@ -7,8 +7,22 @@ import java.io.*;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.TextureLoader;
 
+/**
+ * The parserOBJ Class
+ * Parses OBJ files and creates {@link Model3D}
+ * 
+ * @author sirolf2009
+ *
+ */
 public class parserOBJ {
 
+	/**
+	 * Load a model
+	 * 
+	 * @param file - The OBJ file
+	 * @return The parsed {@link Model3D}
+	 * @throws IOException
+	 */
     public static Model3D loadModel(File file) throws IOException {
         Model3D model = loadobject(file);
         opengldrawtolist(model);
@@ -18,6 +32,12 @@ public class parserOBJ {
         return model;
     }
     
+    /**
+     * Parse an OBJ file
+     * 
+     * @param file - The OBJ file
+     * @return The parsed {@link Model3D}
+     */
     private static Model3D loadobject(File file) {
     	Model3D model = new Model3D();
 		int linecounter = 0;
@@ -193,6 +213,13 @@ public class parserOBJ {
 		GL11.glEndList();
 	}
     
+    //TODO MTL support
+    /**
+     * Loads a PNG texture from an OBJ file
+     * 
+     * @param model - The {@link Model3D}
+     * @param file - The OBJ file
+     */
     private static void loadTexture(Model3D model, File file) {
     	try {
 			model.texture = TextureLoader.getTexture("png", new FileInputStream(new File(file.getPath().replace(".obj", ".png"))));

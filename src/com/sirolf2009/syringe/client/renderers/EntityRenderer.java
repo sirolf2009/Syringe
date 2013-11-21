@@ -4,14 +4,28 @@ import org.lwjgl.opengl.GL11;
 
 import com.sirolf2009.syringe.world.entity.Entity;
 
+/**
+ * The EntityRenderer class
+ * Renders an entity
+ * 
+ * @author sirolf2009
+ *
+ */
 public class EntityRenderer extends ModelRenderSimple implements IEntityRenderer {
 
+	/** The entity to render */
 	private Entity entity;
 
+	/** 
+	 * The constructor 
+	 * 
+	 * @param The location of the .OBJ file
+	 */
 	public EntityRenderer(String modelLocation) {
 		super(modelLocation);
 	}
 	
+	/** Render the entity */
 	@Override
 	public void renderEntity() {
 		GL11.glPushMatrix();
@@ -20,6 +34,11 @@ public class EntityRenderer extends ModelRenderSimple implements IEntityRenderer
 		GL11.glPopMatrix();
 	}
 
+	/**
+	 * Checks if the {@link Model3D} intersects with another {@link Model3D}
+	 * 
+	 * @return true if they collide, false if not
+	 */
 	@Override
 	public boolean intersects(IModelRenderer other) {
 		if(other instanceof IEntityRenderer) {
@@ -45,10 +64,12 @@ public class EntityRenderer extends ModelRenderSimple implements IEntityRenderer
 		return true;
 	}
 
+	/** Get the entity to be rendered */
 	public Entity getEntity() {
 		return entity;
 	}
 
+	/** Set the entity to be rendered */
 	public void setEntity(Entity entity) {
 		this.entity = entity;
 	}

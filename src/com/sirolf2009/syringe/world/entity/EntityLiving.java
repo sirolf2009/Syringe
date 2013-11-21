@@ -3,11 +3,26 @@ package com.sirolf2009.syringe.world.entity;
 import com.sirolf2009.syringe.client.renderers.IEntityRenderer;
 import com.sirolf2009.syringe.world.World;
 
+/**
+ * The EntityLiving Class
+ * Allows for entities to be killed
+ * 
+ * @author sirolf2009
+ *
+ */
 public abstract class EntityLiving extends Entity {
 
+	/** The maximum health of the entity */
 	private int maxHealth;
+	/** The current health of the entity */
 	private int health;
 	
+	/**
+	 * The constructor
+	 * 
+	 * @param world - The current world
+	 * @param renderer - The renderer
+	 */
 	public EntityLiving(World world, IEntityRenderer renderer) {
 		super(world, renderer);
 	}

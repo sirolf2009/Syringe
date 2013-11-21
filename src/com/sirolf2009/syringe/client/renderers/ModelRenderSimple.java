@@ -1,23 +1,38 @@
 package com.sirolf2009.syringe.client.renderers;
 
 import static org.lwjgl.opengl.GL11.glDeleteLists;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
 
 import com.sirolf2009.syringe.client.models.Model3D;
 import com.sirolf2009.syringe.parsers.parserOBJ;
 
+/**
+ * The ModelRenderSimple Class
+ * Renders a model
+ * 
+ * @author sirolf2009
+ *
+ */
 public class ModelRenderSimple implements IModelRenderer {
 
+	/** The OpenGL display list */
 	public int modelDisplayList = 0;
+	/** The {@link Model3D} */
 	public Model3D model = null;
+	/** The location of the model */
 	public String modelLocation = "";
 
+	/**
+	 * The constructor
+	 * 
+	 * @param modelLocation - The location of the model
+	 */
 	public ModelRenderSimple(String modelLocation) {
 		this.modelLocation = modelLocation;
 		loadModel();
