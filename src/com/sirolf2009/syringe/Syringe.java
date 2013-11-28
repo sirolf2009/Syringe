@@ -2,14 +2,22 @@ package com.sirolf2009.syringe;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.opengl.TextureLoader;
 
 import com.sirolf2009.syringe.client.renderers.EntityRenderer;
 import com.sirolf2009.syringe.client.renderers.RenderManager;
+import com.sirolf2009.syringe.parsers.parserOBJ;
 import com.sirolf2009.syringe.util.BufferTools;
 import com.sirolf2009.syringe.util.Camera;
 import com.sirolf2009.syringe.util.EulerCamera;
@@ -42,8 +50,6 @@ public class Syringe {
     public final int screenWidth = 800;
     /** The screen's height */
     public final int screenHeight = 600;
-    
-    Entity entity;
 
     /** The constructor */
     public Syringe() {
@@ -72,14 +78,8 @@ public class Syringe {
         camera.applyPerspectiveMatrix();
         world = new World();
         
-        entity = new EntityTest(world, new EntityRenderer("models/ak.obj"));
-        entity.setPosX(0.1F);
-        entity.setPosY(2.1F);
-        entity.setPosZ(0.1F);
-        world.addEntity(entity);
-        Entity entity2 = new EntityTest(world, new EntityRenderer("models/ak.obj"));
-        world.addEntity(entity2);
-        entity2.setPosY(2);
+        EntityTest test = new EntityTest(world, new EntityRenderer("models/ak.obj"));
+        world.addEntity(test);
         
         glShadeModel(GL_SMOOTH );
         glEnable(GL_DEPTH_TEST);
@@ -89,6 +89,14 @@ public class Syringe {
         glCullFace(GL_BACK);
         glEnable(GL_COLOR_MATERIAL);
         glColorMaterial(GL_FRONT, GL_DIFFUSE);
+        
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		glEnable(GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT, GL_DIFFUSE);
+		glEnable(GL_TEXTURE_2D);
     }
 
     /** Processes camera movement */
@@ -111,13 +119,17 @@ public class Syringe {
     /** Clears the screen and renders the registered models */
     private void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_TEXTURE_2D);
         glLoadIdentity();
         camera.applyTranslations();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         GL11.glScalef(10, 10, 10);
-        GL11.glCallList(world.groundList);
-        renderManager.render(1);
+        try {
+			TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))).bind();
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
+		}
+        world.groundModel.openGLDrawTextured();
+        //renderManager.render(1);
         renderManager.drawGUI();
         //renderManager.drawSpecial(1 | 2);
     }

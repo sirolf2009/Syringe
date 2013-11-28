@@ -54,10 +54,8 @@ public abstract class Entity {
 			velX *= .9;
 			velY = 0;
 			velZ *= .9;
-			System.out.println("clip");
 		} else {
 			velY -= .005;
-			System.out.println("noclip");
 		}
 		Entity colliding = checkColliding();
 		if((colliding = checkColliding()) != null) {
@@ -120,6 +118,10 @@ public abstract class Entity {
 			}
 		}
 		return null;
+	}
+	
+	public void printCoords() {
+		System.out.println(getPosX()+", "+getPosY()+", "+getPosZ());
 	}
 
 	public World getWorld() {

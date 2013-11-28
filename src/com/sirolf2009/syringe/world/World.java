@@ -27,7 +27,7 @@ public class World {
 	/** The {@link AABB} from the ground */
 	public AABB ground;
 	/** The OpenGL object list from the ground */
-	public int groundList;
+	public Model3D groundModel;
 	/** All entities currently in the world */
 	public List<Entity> entities = new ArrayList<Entity>();
 	/** Entities that have died, will be removed after a tick */
@@ -41,9 +41,8 @@ public class World {
 	/** Creates a ground from models/ground.obj */
 	public void setupGround() {
 		try {
-			Model3D groundModel = parserOBJ.loadModel(new File(getClass().getClassLoader().getResource("models/ground.obj").toURI()));
+			groundModel = parserOBJ.loadModel(new File(getClass().getClassLoader().getResource("models/ground.obj").toURI()));
 			ground = groundModel.AABB;
-			groundList = groundModel.objectlist;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			Display.destroy();

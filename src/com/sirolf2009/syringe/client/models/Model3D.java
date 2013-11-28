@@ -1,9 +1,19 @@
 package com.sirolf2009.syringe.client.models;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+
+import com.sirolf2009.syringe.parsers.parserOBJ;
 
 /**
  * The Model3D class
@@ -45,7 +55,7 @@ public class Model3D {
 	public float farpoint = 0;
 	/** The nearest point of the model */
 	public float nearpoint = 0;
-	
+
 	////Statisitcs for collision ////
 	/** The bottom-left X coord of the model */
 	public float posX1 = 0;
@@ -60,9 +70,14 @@ public class Model3D {
 	/** The top-right Z coord of the model */
 	public float posZ2 = 0;
 
+	/** true if the model uses mtllib */
+	public boolean isTextured;
 	/** The Slick-2D texture */
 	public Texture texture;
-	
+
+	public Map<String, Texture> textures = new HashMap<String, Texture>();
+	public Map<String, Integer> lists = new HashMap<String, Integer>();
+
 	/** The {@link AABB} of the model */
 	public AABB AABB;
 
@@ -106,10 +121,33 @@ public class Model3D {
 		return numpolys;
 	}
 
-	/** Bind the texture and draw the model */
-	public void opengldraw() {
+	/** Bind the texture and draw the model
+	 *  Deprecated: Refer to {@link #openGLDrawTextured()} */
+	@Deprecated
+	public void openGLDraw() {
 		texture.bind();
 		GL11.glCallList(objectlist);
+	}
+
+	/** Bind the texture and draw the model */
+	public void openGLDrawTextured() {
+		for(String material : lists.keySet()) {
+			if(textures.get(material) != null) {
+				textures.get(material).bind();
+			} else {
+				System.err.println("Could not find texture for material: "+material);
+				try {
+					textures.put(material, TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
+				} catch (IOException | URISyntaxException e) {
+					e.printStackTrace();
+				}
+			}
+			if(lists.get(material) != null) {
+				GL11.glCallList(lists.get(material));
+			} else {
+				System.err.println("Could not find object list for material: "+material);
+			}
+		}
 	}
 
 }

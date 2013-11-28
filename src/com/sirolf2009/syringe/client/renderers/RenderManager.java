@@ -52,6 +52,9 @@ public class RenderManager {
 		SimpleText.drawString("X: "+syringe.camera.x(), -syringe.screenWidth/2, syringe.screenHeight/2-10);
 		SimpleText.drawString("Y: "+syringe.camera.y(), -syringe.screenWidth/2, syringe.screenHeight/2-20);
 		SimpleText.drawString("Z: "+syringe.camera.z(), -syringe.screenWidth/2, syringe.screenHeight/2-30);
+		SimpleText.drawString("Pitch: "+syringe.camera.pitch(), -syringe.screenWidth/2+100, syringe.screenHeight/2-10);
+		SimpleText.drawString("Roll: "+syringe.camera.roll(), -syringe.screenWidth/2+100, syringe.screenHeight/2-20);
+		SimpleText.drawString("Yaw: "+syringe.camera.yaw(), -syringe.screenWidth/2+100, syringe.screenHeight/2-30);
 		setup3D();
 	}
 

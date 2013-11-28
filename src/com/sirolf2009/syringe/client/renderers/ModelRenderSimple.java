@@ -61,7 +61,7 @@ public class ModelRenderSimple implements IModelRenderer {
 
 	@Override
 	public void renderModel() {
-		model.opengldraw();
+		model.openGLDrawTextured();
 	}
 
 	@Override
