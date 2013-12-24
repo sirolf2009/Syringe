@@ -54,17 +54,16 @@ public abstract class Entity {
 			velX *= .9;
 			velY = 0;
 			velZ *= .9;
-			System.out.println("clip");
 		} else {
 			velY -= .005;
-			System.out.println("noclip");
 		}
 		Entity colliding = checkColliding();
 		if((colliding = checkColliding()) != null) {
 			Vector3f bounce = getDistanceTo(colliding.getAABB());
-			velX -= bounce.x/100;
-			velY -= bounce.y/100;
-			velZ -= bounce.z/100;
+			bounce.scale(getRenderer().getModel().weight/colliding.getRenderer().getModel().weight);
+			velX -= bounce.x;
+			velY -= bounce.y;
+			velZ -= bounce.z;
 		}
 		velX *= 0.5;
 		velY *= 0.5;

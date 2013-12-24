@@ -222,6 +222,7 @@ public class parserOBJ {
      */
     private static void loadTexture(Model3D model, File file) {
     	try {
+    		if(!file.getName().contains("_"))
 			model.texture = TextureLoader.getTexture("png", new FileInputStream(new File(file.getPath().replace(".obj", ".png"))));
 		} catch (FileNotFoundException e) {
 			System.err.println("Could not find texture "+file+" for model "+model+".");

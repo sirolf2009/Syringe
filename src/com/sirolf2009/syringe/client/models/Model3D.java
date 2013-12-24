@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 
+import com.sirolf2009.syringe.collision.Material;
+
 /**
  * The Model3D class
  * Used to store lists containing vertices
@@ -45,7 +47,7 @@ public class Model3D {
 	public float farpoint = 0;
 	/** The nearest point of the model */
 	public float nearpoint = 0;
-	
+
 	////Statisitcs for collision ////
 	/** The bottom-left X coord of the model */
 	public float posX1 = 0;
@@ -62,9 +64,12 @@ public class Model3D {
 
 	/** The Slick-2D texture */
 	public Texture texture;
-	
+
 	/** The {@link AABB} of the model */
 	public AABB AABB;
+
+	public Material material;
+	public int weight = 1;
 
 	/** Destroy all lists */
 	public void cleanUp() {
@@ -108,7 +113,9 @@ public class Model3D {
 
 	/** Bind the texture and draw the model */
 	public void opengldraw() {
-		texture.bind();
+		if(texture != null) {
+			texture.bind();
+		}
 		GL11.glCallList(objectlist);
 	}
 

@@ -9,7 +9,10 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import com.sirolf2009.syringe.client.renderers.EntityRenderer;
+import com.sirolf2009.syringe.client.renderers.EntityRendererAnimated;
+import com.sirolf2009.syringe.client.renderers.ModelRenderAnimated;
 import com.sirolf2009.syringe.client.renderers.RenderManager;
+import com.sirolf2009.syringe.client.renderers.SimpleText;
 import com.sirolf2009.syringe.util.BufferTools;
 import com.sirolf2009.syringe.util.Camera;
 import com.sirolf2009.syringe.util.EulerCamera;
@@ -72,7 +75,7 @@ public class Syringe {
         camera.applyPerspectiveMatrix();
         world = new World();
         
-        entity = new EntityTest(world, new EntityRenderer("models/ak.obj"));
+        entity = new EntityTest(world, new EntityRendererAnimated("models/zombie/", 60));
         entity.setPosX(0.1F);
         entity.setPosY(2.1F);
         entity.setPosZ(0.1F);
