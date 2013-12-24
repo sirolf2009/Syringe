@@ -1,13 +1,34 @@
 package com.sirolf2009.syringe.client.renderers;
 
+import static org.lwjgl.opengl.GL11.GL_COLOR_MATERIAL;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_DIFFUSE;
+import static org.lwjgl.opengl.GL11.GL_FRONT;
+import static org.lwjgl.opengl.GL11.GL_LIGHTING;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_PROJECTION;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBegin;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glColorMaterial;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glEnd;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glMatrixMode;
+import static org.lwjgl.opengl.GL11.glOrtho;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glTranslated;
+import static org.lwjgl.opengl.GL11.glVertex2f;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import static org.lwjgl.opengl.GL11.*;
 
 import com.sirolf2009.syringe.Syringe;
 import com.sirolf2009.syringe.world.entity.Entity;
@@ -58,79 +79,32 @@ public class RenderManager {
 		setup3D();
 	}
 
-	@Deprecated
-	public void drawSpecial(int flag) {
-		if((flag & 1) == 1) {
-			switchTo2D();
-			glScalef(100, 100, 100);
-			glRotated(90, 0, 1, 0);
-			glTranslated(Display.getWidth()/2, Display.getHeight()-10, 0);
-			switchTo3D();
-		}
-		if((flag & 2) == 2) {
-			switchTo2D();
-			glTranslated(Display.getWidth()/2, Display.getHeight()/2, 0);
-			glColor4f(0.2f,1.0f,0f,0.7f);
-			glBegin(GL_LINES);
-			glVertex2f(0.0f, 100f);
-			glVertex2f(0.0f, -100f);
-			glVertex2f(-100, 0.0f);
-			glVertex2f(100, 0.0f);
-			glEnd();
-			switchTo3D();
-		}
-	}
-
 	/** Sets OpenGL up to render 2D */
 	public void setup2D() {
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glPushMatrix();
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, syringe.screenWidth, 0, syringe.screenHeight, -1, 1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		glDisable(GL_LIGHTING);
+		glDisable(GL_DEPTH_TEST);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		glOrtho(0, syringe.screenWidth, 0, syringe.screenHeight, -1, 1);
+		glMatrixMode(GL_MODELVIEW);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		GL11.glPushMatrix();
-		GL11.glLoadIdentity();
+		glPushMatrix();
+		glLoadIdentity();
 	}
 
 	/** Sets OpenGL up to render 3D */
 	public void setup3D() {
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glPopMatrix();
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPopMatrix();
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_LIGHTING);
-		glEnable(GL_COLOR_MATERIAL);
-        glColorMaterial(GL_FRONT, GL_DIFFUSE);
-		glEnable(GL_TEXTURE_2D);
-		
-	}
-
-	@Deprecated
-	public void switchTo2D() {
-		glMatrixMode(GL11.GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		glOrtho(0, Display.getWidth(), 0, Display.getHeight(), -1, 1);
-		glMatrixMode(GL11.GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-		glDisable(GL11.GL_DEPTH_TEST);
-		glDisable(GL11.GL_LIGHTING);
-	}
-
-	@Deprecated
-	public void switchTo3D() {
-		glEnable(GL_LIGHTING);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_TEXTURE_2D);
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_COLOR_MATERIAL);
+        glColorMaterial(GL_FRONT, GL_DIFFUSE);
+		glEnable(GL_TEXTURE_2D);
+		
 	}
 
 	/**

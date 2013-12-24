@@ -1,0 +1,12 @@
+# Blender MTL File: 'Hum_M_1.blend'
+# Material Count: 1
+
+newmtl Human
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.697860 0.625879 0.579559
+Ks 0.472571 0.409065 0.323638
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Human.png

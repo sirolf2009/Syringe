@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
 
@@ -31,7 +32,7 @@ public class parserOBJ {
 	static ArrayList<int[]> faces = new ArrayList<int[]>();
 	static ArrayList<int[]> facestexs = new ArrayList<int[]>();
 	static ArrayList<int[]> facesnorms = new ArrayList<int[]>();
-	
+
 	/**
 	 * Load a model
 	 * 
@@ -43,8 +44,14 @@ public class parserOBJ {
 		Model3D model = loadobject(file);
 		//opengldrawtolist(model);
 		//loadTexture(model, file);
-		model.numpolys = model.faces.size();
+		model.numpolys = faces.size();
 		model.cleanUp();
+		vertexsets.clear();
+		vertexsetsnorms.clear();
+		vertexsetstexs.clear();
+		faces.clear();
+		facestexs.clear();
+		facesnorms.clear();
 		return model;
 	}
 
@@ -75,12 +82,14 @@ public class parserOBJ {
 						textured = true;
 					}
 					if (newline.charAt(0) == 'v' && newline.charAt(1) == ' ') {
-						float[] coords = new float[4];
-						String[] coordstext = new String[4];
-						coordstext = newline.split("\\s+");
-						for (int i = 1;i < coordstext.length;i++) {
-							coords[i-1] = Float.valueOf(coordstext[i]).floatValue();
+						float coords[] = new float[4];
+						String coordstext[] = new String[4];
+						newline = newline.substring(2, newline.length());
+						StringTokenizer st = new StringTokenizer(newline, " ");
+						for(int i = 0; st.hasMoreTokens(); i++) {
+							coords[i] = Float.parseFloat(st.nextToken());
 						}
+						System.out.println(coords[0]+", "+coords[1]+", "+coords[2]);
 						//// check for farpoints ////
 						if (firstpass) {
 							model.rightpoint = coords[0];
@@ -154,26 +163,36 @@ public class parserOBJ {
 						vertexsetsnorms.add(coords);
 					}
 					if (newline.charAt(0) == 'f' && newline.charAt(1) == ' ') {
-						String[] coordstext = newline.split("\\s+");
-						int[] v = new int[coordstext.length - 1];
-						int[] vt = new int[coordstext.length - 1];
-						int[] vn = new int[coordstext.length - 1];
-
-						for (int i = 1;i < coordstext.length;i++) {
-							String fixstring = coordstext[i].replaceAll("//","/0/");
-							String[] tempstring = fixstring.split("/");
-							v[i-1] = Integer.valueOf(tempstring[0]).intValue();
-							if (tempstring.length > 1) {
-								vt[i-1] = Integer.valueOf(tempstring[1]).intValue();
-							} else {
-								vt[i-1] = 0;
+						newline = newline.substring(2, newline.length());
+						StringTokenizer st = new StringTokenizer(newline, " ");
+						int count = st.countTokens();
+						int v[] = new int[count];
+						int vt[] = new int[count];
+						int vn[] = new int[count];
+						for(int i = 0; i < count; i++){
+							char chars[] = st.nextToken().toCharArray();
+							StringBuffer sb = new StringBuffer();
+							char lc = 'x';
+							for(int k = 0; k < chars.length; k++){
+								if(chars[k] == '/' && lc == '/')
+									sb.append('0');
+								lc = chars[k];
+								sb.append(lc);
 							}
-							if (tempstring.length > 2) {
-								vn[i-1] = Integer.valueOf(tempstring[2]).intValue();
-							} else {
-								vn[i-1] = 0;
-							}
+							StringTokenizer st2 = new StringTokenizer
+									(sb.toString(), "/");
+							int num = st2.countTokens();
+							v[i] = Integer.parseInt(st2.nextToken());
+							if(num > 1)
+								vt[i] = Integer.parseInt(st2.nextToken());
+							else
+								vt[i] = 0;
+							if(num > 2)
+								vn[i] = Integer.parseInt(st2.nextToken());
+							else
+								vn[i] = 0;
 						}
+
 						faces.add(v);
 						facestexs.add(vt);
 						facesnorms.add(vn);
@@ -223,10 +242,11 @@ public class parserOBJ {
 			String newline;
 			Map<String, Texture> textures = new HashMap<String, Texture>();
 			String currentTexture = "default";
-			System.out.println(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png"));
 			textures.put(currentTexture, TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
 			while (((newline = reader.readLine()) != null)) {
 				if(newline.startsWith("newmtl")) {
+					System.out.println("Storing mtl "+currentTexture);
+					System.out.println();
 					currentTexture = newline.split("\\s+")[1];
 					textures.put(currentTexture, TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
 					System.out.println("Creating mtl "+currentTexture);
@@ -257,7 +277,7 @@ public class parserOBJ {
 				}
 				if(newline.startsWith("map_Kd")) {
 					String texture = newline.split("\\s+")[1];
-					System.out.println("loading texture "+file.getParent()+"/"+texture);
+					System.out.println("loading texture "+file.getParent()+"\\"+texture + " for mtl "+currentTexture);
 					textures.put(currentTexture, TextureLoader.getTexture("PNG", new FileInputStream(file.getParent()+"/"+texture)));
 				}
 			}
@@ -321,6 +341,7 @@ public class parserOBJ {
 		int objectlist = GL11.glGenLists(1);
 		GL11.glNewList(objectlist, GL11.GL_COMPILE);
 		for (int i=0;i<faces.size();i++) {
+
 			int[] tempfaces = (int[])(faces.get(i));
 			int[] tempfacesnorms = (int[])(facesnorms.get(i));
 			int[] tempfacestexs = (int[])(facestexs.get(i));
@@ -350,12 +371,10 @@ public class parserOBJ {
 					GL11.glTexCoord3f(textempx,1f-textempy,textempz);
 				}
 
-				if(vertexsets.size() > 0) {
-					float tempx = ((float[])vertexsets.get(tempfaces[w] - 1))[0];
-					float tempy = ((float[])vertexsets.get(tempfaces[w] - 1))[1];
-					float tempz = ((float[])vertexsets.get(tempfaces[w] - 1))[2];
-					GL11.glVertex3f(tempx,tempy,tempz);
-				}
+				float tempx = ((float[])vertexsets.get(tempfaces[w] - 1))[0];
+				float tempy = ((float[])vertexsets.get(tempfaces[w] - 1))[1];
+				float tempz = ((float[])vertexsets.get(tempfaces[w] - 1))[2];
+				GL11.glVertex3f(tempx,tempy,tempz);
 			}
 
 			GL11.glEnd();

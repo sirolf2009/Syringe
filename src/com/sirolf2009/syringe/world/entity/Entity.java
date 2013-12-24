@@ -67,6 +67,7 @@ public abstract class Entity {
 		velX *= 0.5;
 		velY *= 0.5;
 		velZ *= 0.5;
+		//printCoords();
 	}
 
 	/**

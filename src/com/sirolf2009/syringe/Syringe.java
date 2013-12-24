@@ -78,7 +78,8 @@ public class Syringe {
         camera.applyPerspectiveMatrix();
         world = new World();
         
-        EntityTest test = new EntityTest(world, new EntityRenderer("models/ak.obj"));
+        EntityTest test = new EntityTest(world, new EntityRenderer("models/Human.obj"));
+        test.setPosY(1);
         world.addEntity(test);
         
         glShadeModel(GL_SMOOTH );
@@ -89,14 +90,6 @@ public class Syringe {
         glCullFace(GL_BACK);
         glEnable(GL_COLOR_MATERIAL);
         glColorMaterial(GL_FRONT, GL_DIFFUSE);
-        
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_LIGHTING);
-		glEnable(GL_COLOR_MATERIAL);
-        glColorMaterial(GL_FRONT, GL_DIFFUSE);
-		glEnable(GL_TEXTURE_2D);
     }
 
     /** Processes camera movement */
@@ -119,18 +112,18 @@ public class Syringe {
     /** Clears the screen and renders the registered models */
     private void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_TEXTURE_2D);
         glLoadIdentity();
         camera.applyTranslations();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        GL11.glScalef(10, 10, 10);
         try {
 			TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))).bind();
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}
         world.groundModel.openGLDrawTextured();
-        //renderManager.render(1);
-        renderManager.drawGUI();
+        renderManager.render(1);
+        //renderManager.drawGUI();
         //renderManager.drawSpecial(1 | 2);
     }
 
