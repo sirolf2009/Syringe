@@ -10,7 +10,7 @@ import java.util.List;
 import org.lwjgl.opengl.Display;
 
 import com.sirolf2009.syringe.client.models.Model3D;
-import com.sirolf2009.syringe.parsers.parserOBJ;
+import com.sirolf2009.syringe.parsers.ParserOBJ;
 
 public class ModelRenderAnimated implements IModelRenderer {
 
@@ -44,7 +44,7 @@ public class ModelRenderAnimated implements IModelRenderer {
 
 	private Model3D parseFrame(String frame) {
 		try {
-			return parserOBJ.loadModel(new File(getClass().getClassLoader().getResource(frame).toURI()));
+			return ParserOBJ.loadModel(new File(getClass().getClassLoader().getResource(frame).toURI()));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			Display.destroy();
@@ -65,7 +65,7 @@ public class ModelRenderAnimated implements IModelRenderer {
 
 	@Override
 	public void renderModel() {
-		animation.get(currentFrame).opengldraw();
+		animation.get(currentFrame).openGLDrawTextured();
 		currentFrame++;
 		if(currentFrame > frames) {
 			currentFrame = 0;

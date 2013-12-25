@@ -68,6 +68,7 @@ public abstract class Entity {
 		velX *= 0.5;
 		velY *= 0.5;
 		velZ *= 0.5;
+		//printCoords();
 	}
 
 	/**
@@ -119,6 +120,10 @@ public abstract class Entity {
 			}
 		}
 		return null;
+	}
+	
+	public void printCoords() {
+		System.out.println(getPosX()+", "+getPosY()+", "+getPosZ());
 	}
 
 	public World getWorld() {

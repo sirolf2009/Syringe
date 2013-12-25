@@ -1,6 +1,28 @@
 package com.sirolf2009.syringe;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_BACK;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_COLOR_MATERIAL;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_DIFFUSE;
+import static org.lwjgl.opengl.GL11.GL_FILL;
+import static org.lwjgl.opengl.GL11.GL_FRONT;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_LIGHTING;
+import static org.lwjgl.opengl.GL11.GL_LIGHT_MODEL_AMBIENT;
+import static org.lwjgl.opengl.GL11.GL_SMOOTH;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glClear;
+import static org.lwjgl.opengl.GL11.glColorMaterial;
+import static org.lwjgl.opengl.GL11.glCullFace;
+import static org.lwjgl.opengl.GL11.glDeleteLists;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glLightModel;
+import static org.lwjgl.opengl.GL11.glLoadIdentity;
+import static org.lwjgl.opengl.GL11.glPolygonMode;
+import static org.lwjgl.opengl.GL11.glShadeModel;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -11,11 +33,9 @@ import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
 
 import org.lwjgl.LWJGLException;
-import org.lwjgl.LWJGLUtil;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
 
 import com.sirolf2009.syringe.client.renderers.EntityRenderer;
 import com.sirolf2009.syringe.client.renderers.EntityRendererAnimated;
@@ -92,7 +112,7 @@ public class Syringe {
 		entity.setPosY(2.1F);
 		entity.setPosZ(0.1F);
 		world.addEntity(entity);
-		Entity entity2 = new EntityTest(world, new EntityRenderer("models/ak.obj"));
+		Entity entity2 = new EntityTest(world, new EntityRenderer("models/Human.obj"));
 		world.addEntity(entity2);
 		entity2.setPosY(2);
 
@@ -130,7 +150,7 @@ public class Syringe {
 		glLoadIdentity();
 		camera.applyTranslations();
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		GL11.glCallList(world.groundList);
+		world.groundModel.openGLDrawTextured();
 		renderManager.render(1);
 		renderManager.drawGUI();
 		//renderManager.drawSpecial(1 | 2);
