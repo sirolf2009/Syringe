@@ -17,7 +17,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 
 import com.sirolf2009.syringe.client.renderers.EntityRenderer;
 import com.sirolf2009.syringe.client.renderers.RenderManager;
-import com.sirolf2009.syringe.parsers.parserOBJ;
+import com.sirolf2009.syringe.parsers.ParserOBJ;
 import com.sirolf2009.syringe.util.BufferTools;
 import com.sirolf2009.syringe.util.Camera;
 import com.sirolf2009.syringe.util.EulerCamera;
@@ -117,7 +117,7 @@ public class Syringe {
         camera.applyTranslations();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         try {
-			TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))).bind();
+			TextureLoader.getTexture("png", new FileInputStream(new File(ParserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))).bind();
 		} catch (IOException | URISyntaxException e) {
 			e.printStackTrace();
 		}

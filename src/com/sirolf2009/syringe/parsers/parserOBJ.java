@@ -1,10 +1,13 @@
 package com.sirolf2009.syringe.parsers;
 
-import com.sirolf2009.syringe.client.models.AABB;
-import com.sirolf2009.syringe.client.models.Model3D;
-
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +20,9 @@ import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
+import com.sirolf2009.syringe.client.models.AABB;
+import com.sirolf2009.syringe.client.models.Model3D;
+
 /**
  * The parserOBJ Class
  * Parses OBJ files and creates {@link Model3D}
@@ -24,7 +30,7 @@ import org.newdawn.slick.opengl.TextureLoader;
  * @author sirolf2009
  *
  */
-public class parserOBJ {
+public class ParserOBJ {
 
 	static ArrayList<float[]> vertexsets = new ArrayList<float[]>();
 	static ArrayList<float[]> vertexsetsnorms = new ArrayList<float[]>();
@@ -65,11 +71,9 @@ public class parserOBJ {
 
 		Model3D model = new Model3D();
 		int linecounter = 0;
-		boolean textured = false;
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			String newline = null;
-			int line = 0;
 			boolean firstpass = true;
 			String currentMaterial = "default";
 			Map<String, Integer> lists = new HashMap<String, Integer>();
@@ -78,18 +82,17 @@ public class parserOBJ {
 				linecounter++;
 				newline = newline.trim();
 				if (newline.length() > 0) {
-					if(newline.startsWith("mtllib")) { //TODO load mtl lib
-						textured = true;
+					if(newline.startsWith("mtllib")) {
+						String path = (file.getParentFile().getPath().replace(System.getProperty("user.dir")+"\\bin\\", ""))+"\\"+newline.split(" ")[1];
+						parseMTL(new File(ParserOBJ.class.getClassLoader().getResource(path).toURI()), model);
 					}
 					if (newline.charAt(0) == 'v' && newline.charAt(1) == ' ') {
 						float coords[] = new float[4];
-						String coordstext[] = new String[4];
 						newline = newline.substring(2, newline.length());
 						StringTokenizer st = new StringTokenizer(newline, " ");
 						for(int i = 0; st.hasMoreTokens(); i++) {
 							coords[i] = Float.parseFloat(st.nextToken());
 						}
-						System.out.println(coords[0]+", "+coords[1]+", "+coords[2]);
 						//// check for farpoints ////
 						if (firstpass) {
 							model.rightpoint = coords[0];
@@ -207,23 +210,24 @@ public class parserOBJ {
 						}
 					}
 				}
-				line++;
 			}
 			lists.put(currentMaterial, openGLDrawToList(model));
 			model.cleanUp();
 			model.AABB = AABB.createAABBFromModel(model);
 			reader.close();
 			model.lists = lists;
-			if(textured) {
-				parseMTL(file, model);
-			}
 			return model;
 		} catch (IOException e) {
-			System.out.println("Failed to read file: " + file.toString());
+			System.err.println("Failed to read file: " + file.toString());
+			e.printStackTrace();
 			System.exit(1);			
 		} catch (NumberFormatException e) {
-			System.out.println("Malformed OBJ (on line " + linecounter + "): " + file.toString() + "\r \r" + e.getMessage());
+			System.err.println("Malformed OBJ (on line " + linecounter + "): " + file.toString() + "\r \r" + e.getMessage());
+			e.printStackTrace();
 			System.exit(1);
+		} catch (URISyntaxException e) {
+			System.err.println("Could not find MTL lib from: " + file.toString());
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -235,20 +239,19 @@ public class parserOBJ {
 	 * @param model - The model the MTL will be applied to
 	 */
 	private static void parseMTL(File file, Model3D model) {
-		File mtllib = new File(file.getPath().replace(".obj", ".mtl"));
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new FileReader(mtllib));
+			reader = new BufferedReader(new FileReader(file));
 			String newline;
 			Map<String, Texture> textures = new HashMap<String, Texture>();
 			String currentTexture = "default";
-			textures.put(currentTexture, TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
+			textures.put(currentTexture, TextureLoader.getTexture("png", new FileInputStream(new File(ParserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
 			while (((newline = reader.readLine()) != null)) {
 				if(newline.startsWith("newmtl")) {
 					System.out.println("Storing mtl "+currentTexture);
 					System.out.println();
 					currentTexture = newline.split("\\s+")[1];
-					textures.put(currentTexture, TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
+					textures.put(currentTexture, TextureLoader.getTexture("png", new FileInputStream(new File(ParserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
 					System.out.println("Creating mtl "+currentTexture);
 				}
 				if(newline.startsWith("Ka")) {
@@ -384,6 +387,7 @@ public class parserOBJ {
 	}
 
 	//TODO MTL support
+	@Deprecated
 	/**
 	 * Loads a PNG texture from an OBJ file
 	 * 

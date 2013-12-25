@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 import org.lwjgl.opengl.Display;
 
 import com.sirolf2009.syringe.client.models.Model3D;
-import com.sirolf2009.syringe.parsers.parserOBJ;
+import com.sirolf2009.syringe.parsers.ParserOBJ;
 
 /**
  * The ModelRenderSimple Class
@@ -41,7 +41,7 @@ public class ModelRenderSimple implements IModelRenderer {
 	@Override
 	public void loadModel() {
 		try {
-			model = parserOBJ.loadModel(new File(getClass().getClassLoader().getResource(modelLocation).toURI()));
+			model = ParserOBJ.loadModel(new File(getClass().getClassLoader().getResource(modelLocation).toURI()));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			Display.destroy();

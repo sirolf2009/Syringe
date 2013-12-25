@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
-import com.sirolf2009.syringe.parsers.parserOBJ;
+import com.sirolf2009.syringe.parsers.ParserOBJ;
 
 /**
  * The Model3D class
@@ -136,7 +136,7 @@ public class Model3D {
 			} else {
 				System.err.println("Could not find texture for material: "+material);
 				try {
-					textures.put(material, TextureLoader.getTexture("png", new FileInputStream(new File(parserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
+					textures.put(material, TextureLoader.getTexture("png", new FileInputStream(new File(ParserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
 				} catch (IOException | URISyntaxException e) {
 					e.printStackTrace();
 				}

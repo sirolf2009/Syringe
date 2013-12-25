@@ -11,7 +11,7 @@ import org.lwjgl.opengl.Display;
 
 import com.sirolf2009.syringe.client.models.AABB;
 import com.sirolf2009.syringe.client.models.Model3D;
-import com.sirolf2009.syringe.parsers.parserOBJ;
+import com.sirolf2009.syringe.parsers.ParserOBJ;
 import com.sirolf2009.syringe.world.entity.Entity;
 import com.sirolf2009.syringe.world.entity.EntityLiving;
 
@@ -41,7 +41,7 @@ public class World {
 	/** Creates a ground from models/ground.obj */
 	public void setupGround() {
 		try {
-			groundModel = parserOBJ.loadModel(new File(getClass().getClassLoader().getResource("models/ground.obj").toURI()));
+			groundModel = ParserOBJ.loadModel(new File(getClass().getClassLoader().getResource("models/ground.obj").toURI()));
 			ground = groundModel.AABB;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
