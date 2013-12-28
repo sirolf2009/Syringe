@@ -1,6 +1,6 @@
 package com.sirolf2009.syringe.client.renderers;
 
-import com.sirolf2009.syringe.client.models.Model3D;
+import com.sirolf2009.syringe.client.models.Model;
 
 /**
  * The IModelRenderer Interface
@@ -22,6 +22,6 @@ public interface IModelRenderer {
 	 * 
 	 * @return The model
 	 */
-	public Model3D getModel();
+	public Model getModel();
 	
 }

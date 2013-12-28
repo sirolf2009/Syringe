@@ -21,11 +21,11 @@ import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
 import com.sirolf2009.syringe.client.models.AABB;
-import com.sirolf2009.syringe.client.models.Model3D;
+import com.sirolf2009.syringe.client.models.Model;
 
 /**
  * The parserOBJ Class
- * Parses OBJ files and creates {@link Model3D}
+ * Parses OBJ files and creates {@link Model}
  * 
  * @author sirolf2009
  *
@@ -43,15 +43,12 @@ public class ParserOBJ {
 	 * Load a model
 	 * 
 	 * @param file - The OBJ file
-	 * @return The parsed {@link Model3D}
+	 * @return The parsed {@link Model}
 	 * @throws IOException
 	 */
-	public static Model3D loadModel(File file) throws IOException {
-		Model3D model = loadobject(file);
-		//opengldrawtolist(model);
-		//loadTexture(model, file);
+	public static Model loadModel(File file) throws IOException {
+		Model model = loadobject(file);
 		model.numpolys = faces.size();
-		model.cleanUp();
 		vertexsets.clear();
 		vertexsetsnorms.clear();
 		vertexsetstexs.clear();
@@ -65,11 +62,12 @@ public class ParserOBJ {
 	 * Parse an OBJ file
 	 * 
 	 * @param file - The OBJ file
-	 * @return The parsed {@link Model3D}
+	 * @return The parsed {@link Model}
 	 */
-	private static Model3D loadobject(File file) {
+	@SuppressWarnings("unchecked")
+	private static Model loadobject(File file) {
 
-		Model3D model = new Model3D();
+		Model model = new Model();
 		int linecounter = 0;
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -91,7 +89,10 @@ public class ParserOBJ {
 						newline = newline.substring(2, newline.length());
 						StringTokenizer st = new StringTokenizer(newline, " ");
 						for(int i = 0; st.hasMoreTokens(); i++) {
-							coords[i] = Float.parseFloat(st.nextToken());
+							String token = st.nextToken();
+							if(!token.contains("#")) {
+								coords[i] = Float.parseFloat(token);
+							}
 						}
 						//// check for farpoints ////
 						if (firstpass) {
@@ -205,17 +206,21 @@ public class ParserOBJ {
 						if(pars[1] != currentMaterial) {
 							lists.put(currentMaterial, openGLDrawToList(model));
 							currentMaterial = pars[1];
-							System.out.println("Adding mtl "+currentMaterial+" for "+file);
 							lists.put(currentMaterial, -1);
 						}
 					}
 				}
 			}
 			lists.put(currentMaterial, openGLDrawToList(model));
-			model.cleanUp();
 			model.AABB = AABB.createAABBFromModel(model);
 			reader.close();
 			model.lists = lists;
+			model.vertexsets = (ArrayList<float[]>) vertexsets.clone();
+			model.vertexsetsnorms = (ArrayList<float[]>) vertexsetsnorms.clone();
+			model.vertexsetstexs = (ArrayList<float[]>) vertexsetsnorms.clone();
+			model.faces = (ArrayList<int[]>) faces.clone();
+			model.facesnorms = (ArrayList<int[]>) facesnorms.clone();
+			model.facestexs = (ArrayList<int[]>) facestexs.clone();
 			return model;
 		} catch (IOException e) {
 			System.err.println("Failed to read file: " + file.toString());
@@ -238,7 +243,7 @@ public class ParserOBJ {
 	 * @param file - The OBJ file
 	 * @param model - The model the MTL will be applied to
 	 */
-	private static void parseMTL(File file, Model3D model) {
+	private static void parseMTL(File file, Model model) {
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(file));
@@ -248,11 +253,8 @@ public class ParserOBJ {
 			textures.put(currentTexture, TextureLoader.getTexture("png", new FileInputStream(new File(ParserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
 			while (((newline = reader.readLine()) != null)) {
 				if(newline.startsWith("newmtl")) {
-					System.out.println("Storing mtl "+currentTexture);
-					System.out.println();
 					currentTexture = newline.split("\\s+")[1];
 					textures.put(currentTexture, TextureLoader.getTexture("png", new FileInputStream(new File(ParserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
-					System.out.println("Creating mtl "+currentTexture);
 				}
 				if(newline.startsWith("Ka")) {
 					float[] rgbArray = new float[3];
@@ -280,7 +282,6 @@ public class ParserOBJ {
 				}
 				if(newline.startsWith("map_Kd")) {
 					String texture = newline.split("\\s+")[1];
-					System.out.println("loading texture "+file.getParent()+"\\"+texture + " for mtl "+currentTexture);
 					textures.put(currentTexture, TextureLoader.getTexture("PNG", new FileInputStream(file.getParent()+"/"+texture)));
 				}
 			}
@@ -295,52 +296,7 @@ public class ParserOBJ {
 		}
 	}
 
-	@Deprecated
-	private static void opengldrawtolist(Model3D model) {
-		model.objectlist = GL11.glGenLists(1);
-		GL11.glNewList(model.objectlist,GL11.GL_COMPILE);
-		for (int i=0;i<model.faces.size();i++) {
-			int[] tempfaces = (int[])(model.faces.get(i));
-			int[] tempfacesnorms = (int[])(model.facesnorms.get(i));
-			int[] tempfacestexs = (int[])(model.facestexs.get(i));
-
-			int polytype;
-			if (tempfaces.length == 3) {
-				polytype = GL11.GL_TRIANGLES;
-			} else if (tempfaces.length == 4) {
-				polytype = GL11.GL_QUADS;
-			} else {
-				polytype = GL11.GL_POLYGON;
-			}
-			GL11.glBegin(polytype);
-
-			for (int w=0;w<tempfaces.length;w++) {
-				if (tempfacesnorms[w] != 0) {
-					float normtempx = ((float[])model.vertexsetsnorms.get(tempfacesnorms[w] - 1))[0];
-					float normtempy = ((float[])model.vertexsetsnorms.get(tempfacesnorms[w] - 1))[1];
-					float normtempz = ((float[])model.vertexsetsnorms.get(tempfacesnorms[w] - 1))[2];
-					GL11.glNormal3f(normtempx, normtempy, normtempz);
-				}
-
-				if (tempfacestexs[w] != 0) {
-					float textempx = ((float[])model.vertexsetstexs.get(tempfacestexs[w] - 1))[0];
-					float textempy = ((float[])model.vertexsetstexs.get(tempfacestexs[w] - 1))[1];
-					float textempz = ((float[])model.vertexsetstexs.get(tempfacestexs[w] - 1))[2];
-					GL11.glTexCoord3f(textempx,1f-textempy,textempz);
-				}
-
-				float tempx = ((float[])model.vertexsets.get(tempfaces[w] - 1))[0];
-				float tempy = ((float[])model.vertexsets.get(tempfaces[w] - 1))[1];
-				float tempz = ((float[])model.vertexsets.get(tempfaces[w] - 1))[2];
-				GL11.glVertex3f(tempx,tempy,tempz);
-			}
-
-			GL11.glEnd();
-		}
-		GL11.glEndList();
-	}
-
-	private static int openGLDrawToList(Model3D model) {
+	private static int openGLDrawToList(Model model) {
 		int objectlist = GL11.glGenLists(1);
 		GL11.glNewList(objectlist, GL11.GL_COMPILE);
 		for (int i=0;i<faces.size();i++) {
@@ -384,26 +340,5 @@ public class ParserOBJ {
 		}
 		GL11.glEndList();
 		return objectlist;
-	}
-
-	@Deprecated
-	/**
-	 * Loads a PNG texture from an OBJ file
-	 * 
-	 * @param model - The {@link Model3D}
-	 * @param file - The OBJ file
-	 */
-	private static void loadTexture(Model3D model, File file) {
-		try {
-			model.texture = TextureLoader.getTexture("png", new FileInputStream(new File(file.getPath().replace(".obj", ".png"))));
-		} catch (FileNotFoundException e) {
-			System.err.println("Could not find texture "+file+" for model "+model+".");
-			e.printStackTrace();
-			System.exit(1);
-		} catch (IOException e) {
-			System.err.println("Could not open texture "+file+" for model "+model+".");
-			e.printStackTrace();
-			System.exit(1);
-		}
 	}
 }

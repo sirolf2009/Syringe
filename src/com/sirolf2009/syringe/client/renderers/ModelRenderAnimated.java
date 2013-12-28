@@ -9,12 +9,12 @@ import java.util.List;
 
 import org.lwjgl.opengl.Display;
 
-import com.sirolf2009.syringe.client.models.Model3D;
+import com.sirolf2009.syringe.client.models.Model;
 import com.sirolf2009.syringe.parsers.ParserOBJ;
 
 public class ModelRenderAnimated implements IModelRenderer {
 
-	public List<Model3D> animation;
+	public List<Model> animation;
 	public int currentFrame;
 	public String animationLocation = "";
 	public int frames;
@@ -22,7 +22,7 @@ public class ModelRenderAnimated implements IModelRenderer {
 	public ModelRenderAnimated(String animationLocation, int frames) {
 		this.animationLocation = animationLocation;
 		this.frames = frames;
-		animation = new ArrayList<Model3D>();
+		animation = new ArrayList<Model>();
 		loadModel();
 	}
 
@@ -42,7 +42,7 @@ public class ModelRenderAnimated implements IModelRenderer {
 		}
 	}
 
-	private Model3D parseFrame(String frame) {
+	private Model parseFrame(String frame) {
 		try {
 			return ParserOBJ.loadModel(new File(getClass().getClassLoader().getResource(frame).toURI()));
 		} catch (FileNotFoundException e) {
@@ -77,7 +77,7 @@ public class ModelRenderAnimated implements IModelRenderer {
 	}
 
 	@Override
-	public Model3D getModel() {
+	public Model getModel() {
 		return animation.get(currentFrame);
 	}
 

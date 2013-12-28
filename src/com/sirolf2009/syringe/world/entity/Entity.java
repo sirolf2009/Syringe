@@ -1,5 +1,8 @@
 package com.sirolf2009.syringe.world.entity;
 
+import java.io.ObjectInputStream.GetField;
+import java.util.Random;
+
 import org.lwjgl.util.vector.Vector3f;
 
 import com.sirolf2009.syringe.client.models.AABB;
@@ -25,6 +28,23 @@ public abstract class Entity {
 	private float velY;
 	/** The Z velocity */
 	private float velZ;
+	/** The X rotation */
+	private float rotX;
+	/** The Y rotation */
+	private float rotY;
+	/** The Z rotation */
+	private float rotZ;
+	/** The X velocity */
+	private float velRotX;
+	/** The Y velocity */
+	private float velRotY;
+	/** The Z velocity */
+	private float velRotZ;
+
+	private float speed;
+	private Vector3f destination;
+
+	public Random rand;
 
 	/** The entity's renderer */
 	private IEntityRenderer renderer;
@@ -38,8 +58,12 @@ public abstract class Entity {
 		this.world = world;
 		setRenderer(renderer);
 		AABB = getRenderer().getModel().AABB;
+		speed = .02F;
+		rand = new Random();
+		//rotateTowards(-1, 0, -2);
+		//moveForward();
 	}
-	
+
 	/**
 	 * Updated the entity's position and checks for collision
 	 * 
@@ -50,24 +74,27 @@ public abstract class Entity {
 		posY += velY;
 		posZ += velZ;
 		AABB.setLocation(posX, posY, posZ);
-		if(AABB.intersects(world.ground)) {
-			velX *= .9;
-			velY = 0;
-			velZ *= .9;
+		getRenderer().getModel().AABB.setLocation(posX, posY, posZ);
+		Vector3f bounce;
+		if((bounce = world.groundModel.getIntersectionDistance(AABB)) != null) {
+			if(bounce.y < 0)
+				bounce.y *= -1;
+			velX *= .99999;
+			posY += bounce.y;
+			velZ *= .99999;
 		} else {
-			velY -= .005;
+			//System.out.println("no collide "+posY+" "+velY);
+			velY = -0.001F;
 		}
 		Entity colliding = checkColliding();
 		if((colliding = checkColliding()) != null) {
-			Vector3f bounce = getDistanceTo(colliding.getAABB());
+			bounce = getDistanceTo(colliding.getAABB());
 			bounce.scale(getRenderer().getModel().weight/colliding.getRenderer().getModel().weight);
 			velX -= bounce.x;
 			velY -= bounce.y;
 			velZ -= bounce.z;
 		}
-		velX *= 0.5;
-		velY *= 0.5;
-		velZ *= 0.5;
+		wander();
 		//printCoords();
 	}
 
@@ -78,35 +105,7 @@ public abstract class Entity {
 	 * @return {@link Vector3f} - A vector containing the distance
 	 */
 	public Vector3f getDistanceTo(AABB AABB) {
-		float xAxis = Math.abs(getAABB().center.x - AABB.center.x); //distance between centers
-		float yAxis = Math.abs(getAABB().center.y - AABB.center.y); //distance between centers
-		float zAxis = Math.abs(getAABB().center.z - AABB.center.z); //distance between centers
-
-	    float cw = getAABB().width/2 + AABB.width/2; //combined width
-	    float ch = getAABB().height/2 + AABB.height/2; //combined height
-	    float cd = getAABB().depth/2 + AABB.depth/2; //combined depth
-
-	    //early exit
-	    if(xAxis > cw) return null;
-	    if(yAxis > ch) return null;
-	    if(zAxis > cd) return null;
-	    
-		float ox = Math.abs(xAxis - cw); //overlap on x
-		float oy = Math.abs(yAxis - ch); //overlap on y
-		float oz = Math.abs(zAxis - cd); //overlap on z
-
-		//direction
-		Vector3f deltaDir = Vector3f.sub(AABB.center, getAABB().center, null); //subtract other.position from this.position
-		deltaDir.normalise();
-
-		return new Vector3f(deltaDir.x * ox, deltaDir.y * oy, deltaDir.z * oz);
-		
-		/*Vector3f distance = new Vector3f();
-		distance.x = getAABB().center.x - AABB.center.x;
-		distance.y = getAABB().center.y - AABB.center.y;
-		distance.z = getAABB().center.z - AABB.center.z;
-		distance.normalise();
-		return distance;*/
+		return com.sirolf2009.syringe.client.models.AABB.getDistanceBetween(getAABB(), AABB);
 	}
 
 	/** Returns an entity that this entity is colliding with */
@@ -121,7 +120,34 @@ public abstract class Entity {
 		}
 		return null;
 	}
-	
+
+	public void moveForward() {
+		setVelX((float) (speed * Math.cos(rotY)));
+		setVelZ((float) (speed * Math.sin(rotY)));
+	}
+
+	public void rotateTowards(float x, float y, float z) {
+		float xDistance = x - getPosX();
+		float zDistance = z - getPosZ();
+		float angle = (float) Math.toDegrees(Math.atan2(zDistance, xDistance));
+		setRotY(angle);
+	}
+
+	public void wander() {
+		if(destination == null) {
+			//destination = new Vector3f(rand.nextInt(20)-10, 0, rand.nextInt(20)-10);
+			destination = new Vector3f(-20, 0, -20);
+		}
+		if(Math.round(posX) == Math.round(destination.x) && Math.round(posZ) == Math.round(destination.z)) {
+			destination = null;
+			setVelX(0);
+			setVelZ(0);
+		} else {
+			rotateTowards(destination.x, destination.y, destination.z);
+			moveForward();
+		}
+	}
+
 	public void printCoords() {
 		System.out.println(getPosX()+", "+getPosY()+", "+getPosZ());
 	}
@@ -196,5 +222,53 @@ public abstract class Entity {
 
 	public void setAABB(AABB AABB) {
 		this.AABB = AABB;
+	}
+
+	public float getRotX() {
+		return rotX;
+	}
+
+	public void setRotX(float rotX) {
+		this.rotX = rotX;
+	}
+
+	public float getRotY() {
+		return rotY;
+	}
+
+	public void setRotY(float rotY) {
+		this.rotY = rotY;
+	}
+
+	public float getRotZ() {
+		return rotZ;
+	}
+
+	public void setRotZ(float rotZ) {
+		this.rotZ = rotZ;
+	}
+
+	public float getVelRotX() {
+		return velRotX;
+	}
+
+	public void setVelRotX(float velRotX) {
+		this.velRotX = velRotX;
+	}
+
+	public float getVelRotY() {
+		return velRotY;
+	}
+
+	public void setVelRotY(float velRotY) {
+		this.velRotY = velRotY;
+	}
+
+	public float getVelRotZ() {
+		return velRotZ;
+	}
+
+	public void setVelRotZ(float velRotZ) {
+		this.velRotZ = velRotZ;
 	}
 }

@@ -35,7 +35,7 @@ public class EntityRendererAnimated extends ModelRenderAnimated implements IEnti
 	}
 
 	/**
-	 * Checks if the {@link Model3D} intersects with another {@link Model3D}
+	 * Checks if the {@link Model} intersects with another {@link Model}
 	 * 
 	 * @return true if they collide, false if not
 	 */

@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 
 import org.lwjgl.opengl.Display;
 
-import com.sirolf2009.syringe.client.models.Model3D;
+import com.sirolf2009.syringe.client.models.Model;
 import com.sirolf2009.syringe.parsers.ParserOBJ;
 
 /**
@@ -23,8 +23,8 @@ public class ModelRenderSimple implements IModelRenderer {
 
 	/** The OpenGL display list */
 	public int modelDisplayList = 0;
-	/** The {@link Model3D} */
-	public Model3D model = null;
+	/** The {@link Model} */
+	public Model model = null;
 	/** The location of the model */
 	public String modelLocation = "";
 
@@ -70,7 +70,7 @@ public class ModelRenderSimple implements IModelRenderer {
 	}
 
 	@Override
-	public Model3D getModel() {
+	public Model getModel() {
 		return model;
 	}
 	

@@ -29,13 +29,16 @@ public class EntityRenderer extends ModelRenderSimple implements IEntityRenderer
 	@Override
 	public void renderEntity() {
 		GL11.glPushMatrix();
-		GL11.glTranslated(entity.getPosX(), entity.getPosY(), entity.getPosZ());
+		GL11.glTranslatef(entity.getPosX(), entity.getPosY(), entity.getPosZ());
+		GL11.glRotatef(entity.getRotX(), 1, 0, 0);
+		GL11.glRotatef(entity.getRotY(), 0, 1, 0);
+		GL11.glRotatef(entity.getRotZ(), 0, 0, 1);
 		renderModel();
 		GL11.glPopMatrix();
 	}
 
 	/**
-	 * Checks if the {@link Model3D} intersects with another {@link Model3D}
+	 * Checks if the {@link Model} intersects with another {@link Model}
 	 * 
 	 * @return true if they collide, false if not
 	 */

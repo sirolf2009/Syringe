@@ -57,6 +57,46 @@ public class AABB {
 	}
 	
 	/**
+     * Check if this AABB intersects with another
+     * 
+     * @return true if intersecting, false if not
+     */
+	public boolean intersectsPrecise(AABB other) {
+		if(Math.abs(center.x - other.center.x) < width/2 + other.width/2) {
+			if(Math.abs(center.y - other.center.y) < height/2 + other.height/2) {
+				if(Math.abs(center.z - other.center.z) < depth/2 + other.depth/2) {
+					return true;
+				}
+	         }
+		}
+		return false;
+	}
+	
+	public static Vector3f getDistanceBetween(AABB AABB1, AABB AABB2) {
+		float xAxis = Math.abs(AABB1.center.x - AABB2.center.x); //distance between centers
+		float yAxis = Math.abs(AABB1.center.y - AABB2.center.y); //distance between centers
+		float zAxis = Math.abs(AABB1.center.z - AABB2.center.z); //distance between centers
+
+		float cw = AABB1.width/2 + AABB2.width/2; //combined width
+		float ch = AABB1.height/2 + AABB2.height/2; //combined height
+		float cd = AABB1.depth/2 + AABB2.depth/2; //combined depth
+
+		//early exit
+		if(xAxis > cw) return null;
+		if(yAxis > ch) return null;
+		if(zAxis > cd) return null;
+
+		float ox = Math.abs(xAxis - cw); //overlap on x
+		float oy = Math.abs(yAxis - ch); //overlap on y
+		float oz = Math.abs(zAxis - cd); //overlap on z
+
+		//direction
+		Vector3f deltaDir = Vector3f.sub(AABB2.center, AABB1.center, null); //subtract other.position from this.position
+
+		return new Vector3f(deltaDir.x * ox, deltaDir.y * oy, deltaDir.z * oz);
+	}
+	
+	/**
 	 * Apply translation to the AABB
 	 * 
 	 * @param tranX - delta x
@@ -89,12 +129,17 @@ public class AABB {
 		center = new Vector3f(posX1 + width/2, posY1 + height/2, posZ1 + depth/2);
 	}
 	
+	@Override
+	public String toString() {
+		return posX1+", "+posY1+", "+posZ1+", "+width+", "+height+", "+depth;
+	}
+	
 	/**
-	 * Create an AABB from a {@link Model3D}
+	 * Create an AABB from a {@link Model}
 	 * 
 	 * @return the generated AABB
 	 */
-	public static AABB createAABBFromModel(Model3D model) {
+	public static AABB createAABBFromModel(Model model) {
 		return new AABB(model.posX1, model.posY1, model.posZ1, model.posX2, model.posY2, model.posZ2);
 	}
 

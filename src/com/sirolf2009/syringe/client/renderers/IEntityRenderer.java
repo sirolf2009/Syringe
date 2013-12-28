@@ -13,7 +13,7 @@ public interface IEntityRenderer extends IModelRenderer {
 	
 	/** Render the entity */
 	public void renderEntity();
-	/** Checks if the {@link Model3D} intersects with another {@link Model3D} */
+	/** Checks if the {@link Model} intersects with another {@link Model} */
 	public boolean intersects(IModelRenderer other);
 	
 	/** Set the entity to be rendered */

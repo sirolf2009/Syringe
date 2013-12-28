@@ -10,7 +10,7 @@ import java.util.List;
 import org.lwjgl.opengl.Display;
 
 import com.sirolf2009.syringe.client.models.AABB;
-import com.sirolf2009.syringe.client.models.Model3D;
+import com.sirolf2009.syringe.client.models.Model;
 import com.sirolf2009.syringe.parsers.ParserOBJ;
 import com.sirolf2009.syringe.world.entity.Entity;
 import com.sirolf2009.syringe.world.entity.EntityLiving;
@@ -26,8 +26,9 @@ public class World {
 	
 	/** The {@link AABB} from the ground */
 	public AABB ground;
+	public ArrayList<float[]> vertexsets;
 	/** The OpenGL object list from the ground */
-	public Model3D groundModel;
+	public Model groundModel;
 	/** All entities currently in the world */
 	public List<Entity> entities = new ArrayList<Entity>();
 	/** Entities that have died, will be removed after a tick */

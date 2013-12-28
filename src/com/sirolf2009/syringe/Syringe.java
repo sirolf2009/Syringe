@@ -36,6 +36,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 
 import com.sirolf2009.syringe.client.renderers.EntityRenderer;
 import com.sirolf2009.syringe.client.renderers.EntityRendererAnimated;
@@ -102,19 +103,21 @@ public class Syringe {
 	public void init() {
 		renderManager = new RenderManager(this);
 		camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / Display.getHeight())
-				.setRotation(0.0f, 0.0f, 0.0f).setPosition(2.0F, 2.0f, 0.0f).setFieldOfView(80).build();
+				.setRotation(0.0f, 0.0f, 0.0f).setPosition(0.0F, 1.0f, 2.0f).setFieldOfView(80).build();
 		camera.applyOptimalStates();
 		camera.applyPerspectiveMatrix();
 		world = new World();
 
-		entity = new EntityTest(world, new EntityRendererAnimated("models/zombie/", 60));
-		entity.setPosX(0.1F);
-		entity.setPosY(2.1F);
-		entity.setPosZ(0.1F);
-		world.addEntity(entity);
-		Entity entity2 = new EntityTest(world, new EntityRenderer("models/Human.obj"));
-		world.addEntity(entity2);
-		entity2.setPosY(2);
+//		entity = new EntityTest(world, new EntityRendererAnimated("models/zombie/", 60));
+//		entity.setPosX(0.1F);
+//		entity.setPosY(2.1F);
+//		entity.setPosZ(0.1F);
+//		world.addEntity(entity);
+		for(int i = 0; i < 1; i++) {
+			Entity entity2 = new EntityTest(world, new EntityRenderer("models/Human.obj"));
+			world.addEntity(entity2);
+			entity2.setPosY(.1F+i/10);
+		}
 
 		glShadeModel(GL_SMOOTH );
 		glEnable(GL_DEPTH_TEST);
