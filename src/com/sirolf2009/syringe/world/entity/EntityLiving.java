@@ -25,6 +25,8 @@ public abstract class EntityLiving extends Entity {
 	 */
 	public EntityLiving(World world, IEntityRenderer renderer) {
 		super(world, renderer);
+		setMaxHealth(100);
+		setHealth(getMaxHealth());
 	}
 	
 	public void update(long delta) {

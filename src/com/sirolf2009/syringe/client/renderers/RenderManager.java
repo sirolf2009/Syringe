@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 
 import com.sirolf2009.syringe.Syringe;
 import com.sirolf2009.syringe.world.entity.Entity;
@@ -51,6 +52,7 @@ public class RenderManager {
 	/** A map containing all the registered {@link IEntityRenderer} */
 	private Map<Entity, IEntityRenderer> entityRenderers = new HashMap<Entity, IEntityRenderer>();
 
+	TextRenderer text;
 	/**
 	 * The constructor
 	 * 
@@ -58,24 +60,29 @@ public class RenderManager {
 	 */
 	public RenderManager(Syringe syringe) {
 		this.syringe = syringe;
+		text = new TextRenderer();
 	}
 
 	/** draws the HUD */
 	public void drawGUI() {
 		setup2D();
+		glPushMatrix();
+		GL11.glColor3f(1f,1f,1f);
 		glTranslated(Display.getWidth()/2, Display.getHeight()/2, 0);
 		glBegin(GL_LINES);
-		glVertex2f(0.0f, 100f);
-		glVertex2f(0.0f, -100f);
-		glVertex2f(-100, 0.0f);
-		glVertex2f(100, 0.0f);
+		glVertex2f(0.0f, 10f);
+		glVertex2f(0.0f, -10f);
+		glVertex2f(-10, 0.0f);
+		glVertex2f(10, 0.0f);
 		glEnd();
-		SimpleText.drawString("X: "+syringe.camera.x(), -syringe.screenWidth/2, syringe.screenHeight/2-10);
-		SimpleText.drawString("Y: "+syringe.camera.y(), -syringe.screenWidth/2, syringe.screenHeight/2-20);
-		SimpleText.drawString("Z: "+syringe.camera.z(), -syringe.screenWidth/2, syringe.screenHeight/2-30);
-		SimpleText.drawString("Pitch: "+syringe.camera.pitch(), -syringe.screenWidth/2+100, syringe.screenHeight/2-10);
-		SimpleText.drawString("Roll: "+syringe.camera.roll(), -syringe.screenWidth/2+100, syringe.screenHeight/2-20);
-		SimpleText.drawString("Yaw: "+syringe.camera.yaw(), -syringe.screenWidth/2+100, syringe.screenHeight/2-30);
+		glPopMatrix();
+		glPushMatrix();
+		glTranslated(0, Display.getHeight(), 0); //this is needed because reasons
+		text.renderText(0, 0, "X: "+Syringe.camera.x());
+		text.renderText(0, 16, "Y: "+Syringe.camera.y());
+		text.renderText(0, 32, "Z: "+Syringe.camera.z());
+		text.renderText(0, 48, "FPS: "+syringe.FPS);
+		glPopMatrix();
 		setup3D();
 	}
 
@@ -88,6 +95,7 @@ public class RenderManager {
 		glLoadIdentity();
 		glOrtho(0, syringe.screenWidth, 0, syringe.screenHeight, -1, 1);
 		glMatrixMode(GL_MODELVIEW);
+		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glPushMatrix();
 		glLoadIdentity();
@@ -104,7 +112,6 @@ public class RenderManager {
 		glEnable(GL_COLOR_MATERIAL);
         glColorMaterial(GL_FRONT, GL_DIFFUSE);
 		glEnable(GL_TEXTURE_2D);
-		
 	}
 
 	/**

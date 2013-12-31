@@ -1,6 +1,5 @@
 package com.sirolf2009.syringe.world.entity;
 
-import java.io.ObjectInputStream.GetField;
 import java.util.Random;
 
 import org.lwjgl.util.vector.Vector3f;
@@ -79,12 +78,16 @@ public abstract class Entity {
 		if((bounce = world.groundModel.getIntersectionDistance(AABB)) != null) {
 			if(bounce.y < 0)
 				bounce.y *= -1;
-			velX *= .99999;
+			velX *= .9;
 			posY += bounce.y;
-			velZ *= .99999;
+			velY = 0;
+			velZ *= .9;
+		} else if(posY<-0) {
+			posY = 0.1F;
 		} else {
 			//System.out.println("no collide "+posY+" "+velY);
-			velY = -0.001F;
+			velY -= 0.01F;
+			System.out.println(velY);
 		}
 		Entity colliding = checkColliding();
 		if((colliding = checkColliding()) != null) {
@@ -96,6 +99,9 @@ public abstract class Entity {
 		}
 		wander();
 		//printCoords();
+	}
+	
+	public void onAddedToWorld() {
 	}
 
 	/**
@@ -135,8 +141,8 @@ public abstract class Entity {
 
 	public void wander() {
 		if(destination == null) {
-			//destination = new Vector3f(rand.nextInt(20)-10, 0, rand.nextInt(20)-10);
-			destination = new Vector3f(-20, 0, -20);
+			destination = new Vector3f(rand.nextInt(20)-10, 0, rand.nextInt(20)-10);
+			//destination = new Vector3f(-20, 0, -20);
 		}
 		if(Math.round(posX) == Math.round(destination.x) && Math.round(posZ) == Math.round(destination.z)) {
 			destination = null;

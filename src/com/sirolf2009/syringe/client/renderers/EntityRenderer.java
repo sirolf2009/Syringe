@@ -1,8 +1,13 @@
 package com.sirolf2009.syringe.client.renderers;
 
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.opengl.TextureImpl;
 
+import com.sirolf2009.syringe.Syringe;
+import com.sirolf2009.syringe.client.models.Model;
 import com.sirolf2009.syringe.world.entity.Entity;
+import com.sirolf2009.syringe.world.entity.EntityLiving;
 
 /**
  * The EntityRenderer class
@@ -34,6 +39,41 @@ public class EntityRenderer extends ModelRenderSimple implements IEntityRenderer
 		GL11.glRotatef(entity.getRotY(), 0, 1, 0);
 		GL11.glRotatef(entity.getRotZ(), 0, 0, 1);
 		renderModel();
+		GL11.glPopMatrix();
+		renderName("Lolface :D");
+		if(entity instanceof EntityLiving) {
+			//renderHealthBar();
+		}
+	}
+	
+	private void renderHealthBar() {
+		GL11.glPushMatrix();
+		TextureImpl.bindNone();
+		Color.red.bind();
+		GL11.glTranslatef(entity.getPosX(), entity.getPosY(), entity.getPosZ());
+		GL11.glTranslated(-.5, .85, 0);
+		GL11.glScaled(0.005, 0.005, 0.005);
+		GL11.glRotated(-Syringe.camera.yaw(), 0, 1, 0);
+		GL11.glRotated(-Syringe.camera.pitch(), 1, 0, 0);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glVertex2i(-50,-10);
+	    GL11.glVertex2i(50,-10);
+	    GL11.glVertex2i(50,10);
+	    GL11.glVertex2i(-50,10);
+		GL11.glEnd();
+		Color.black.bind();
+		Syringe.renderManager.text.renderText(0, 0, "hp", Color.black);
+		GL11.glPopMatrix();
+	}
+
+	private void renderName(String name) {
+		GL11.glPushMatrix();
+		GL11.glTranslatef(entity.getPosX(), entity.getPosY(), entity.getPosZ());
+		GL11.glTranslated(-.5, .75, 0);
+		GL11.glScaled(0.005, 0.005, 0.005);
+		GL11.glRotated(-Syringe.camera.yaw(), 0, 1, 0);
+		GL11.glRotated(-Syringe.camera.pitch(), 1, 0, 0);
+		Syringe.renderManager.text.renderText(0, 0, name);
 		GL11.glPopMatrix();
 	}
 

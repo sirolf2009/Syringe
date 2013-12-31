@@ -94,6 +94,7 @@ public class World {
 	 */
 	public synchronized void addEntity(Entity entity) {
 		entities.add(entity);
+		entity.onAddedToWorld();
 	}
 	
 }

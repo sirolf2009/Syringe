@@ -337,7 +337,6 @@ public class Model {
 			}
 			AABB AABB = new AABB(posX1, posY1, posZ1, posX2, posY2, posZ2);
 			if(AABB.intersects(other)) {
-				//System.out.println(AABB+" intersects with "+other);
 				return com.sirolf2009.syringe.client.models.AABB.getDistanceBetween(AABB, other);
 			}
 		}

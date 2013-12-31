@@ -33,19 +33,19 @@ import java.nio.ByteBuffer;
 import javax.imageio.ImageIO;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
 
 import com.sirolf2009.syringe.client.renderers.EntityRenderer;
-import com.sirolf2009.syringe.client.renderers.EntityRendererAnimated;
 import com.sirolf2009.syringe.client.renderers.RenderManager;
 import com.sirolf2009.syringe.util.BufferTools;
 import com.sirolf2009.syringe.util.Camera;
 import com.sirolf2009.syringe.util.EulerCamera;
 import com.sirolf2009.syringe.world.World;
 import com.sirolf2009.syringe.world.entity.Entity;
+import com.sirolf2009.syringe.world.entity.EntityPlayer;
 import com.sirolf2009.syringe.world.entity.EntityTest;
 
 /**
@@ -57,14 +57,15 @@ import com.sirolf2009.syringe.world.entity.EntityTest;
 public class Syringe {
 
 	/** The camera used to move the world */
-	public Camera camera;
+	public static Camera camera;
+	public static EntityPlayer player;
 
 	@Deprecated
 	/** Not sure what this was used for :3 */
 	private int modelDisplayList;
 
 	/** The rendermanager */
-	private RenderManager renderManager;
+	public static RenderManager renderManager;
 
 	/** The world */
 	public World world;
@@ -74,7 +75,9 @@ public class Syringe {
 	/** The screen's height */
 	public final int screenHeight = 600;
 
-	Entity entity;
+	public int FPS;
+	private int countingFPS;
+	private long lastFPS;
 
 	/** The constructor */
 	public Syringe() {
@@ -83,6 +86,12 @@ public class Syringe {
 			initDisplay();
 			init();
 			while (!Display.isCloseRequested()) {
+				if ((Sys.getTime() * 1000) / Sys.getTimerResolution() - lastFPS > 1000) {
+					FPS = countingFPS;
+					countingFPS = 0;
+					lastFPS += 1000;
+				}
+				countingFPS++;
 				long newTime = System.currentTimeMillis();
 				world.update(newTime - oldTime);
 				oldTime = newTime;
@@ -107,17 +116,24 @@ public class Syringe {
 		camera.applyOptimalStates();
 		camera.applyPerspectiveMatrix();
 		world = new World();
+		
+		lastFPS = (Sys.getTime() * 1000) / Sys.getTimerResolution();
 
 //		entity = new EntityTest(world, new EntityRendererAnimated("models/zombie/", 60));
 //		entity.setPosX(0.1F);
 //		entity.setPosY(2.1F);
 //		entity.setPosZ(0.1F);
 //		world.addEntity(entity);
-		for(int i = 0; i < 1; i++) {
+		for(int i = 0; i < 10; i++) {
 			Entity entity2 = new EntityTest(world, new EntityRenderer("models/Human.obj"));
-			world.addEntity(entity2);
-			entity2.setPosY(.1F+i/10);
+			//world.addEntity(entity2);
+			entity2.setPosY(.1F);
+			entity2.setPosX(i);
 		}
+		EntityPlayer player = new EntityPlayer(world, new EntityRenderer("models/Human.obj"));
+		player.setPosY(1);
+		player.setPosX(10);
+		world.addEntity(player);
 
 		glShadeModel(GL_SMOOTH );
 		glEnable(GL_DEPTH_TEST);
@@ -147,7 +163,7 @@ public class Syringe {
 	}
 
 	/** Clears the screen and renders the registered models */
-	private void render() {
+	private void render() {		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_TEXTURE_2D);
 		glLoadIdentity();
@@ -174,6 +190,7 @@ public class Syringe {
 			list[1] = convertToByteBuffer(ImageIO.read(new File(getClass().getClassLoader().getResource("icon16.png").toURI())));
 		}
 		Display.setIcon(list);
+		Display.setResizable(true);
 		Display.create();
 	}
 
