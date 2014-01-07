@@ -1,13 +1,9 @@
 package com.sirolf2009.syringe.client.renderers;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.lwjgl.opengl.Display;
 
 import com.sirolf2009.syringe.client.models.Model;
 import com.sirolf2009.syringe.parsers.ParserOBJ;
@@ -43,24 +39,7 @@ public class ModelRenderAnimated implements IModelRenderer {
 	}
 
 	private Model parseFrame(String frame) {
-		try {
-			return ParserOBJ.loadModel(new File(getClass().getClassLoader().getResource(frame).toURI()));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			Display.destroy();
-			System.exit(1);
-		} catch (IOException e) {
-			System.err.println("Something went wrong with loading "+frame);
-			e.printStackTrace();
-			Display.destroy();
-			System.exit(1);
-		} catch (URISyntaxException e) {
-			System.err.println("Something went wrong with loading "+frame);
-			e.printStackTrace();
-			Display.destroy();
-			System.exit(1);
-		}
-		return null;
+		return new ParserOBJ().parse(frame);
 	}
 
 	@Override

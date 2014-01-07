@@ -30,7 +30,7 @@ import com.sirolf2009.syringe.client.models.Model;
  * @author sirolf2009
  *
  */
-public class ParserOBJ {
+public class ParserOBJ implements IParser {
 
 	static ArrayList<float[]> vertexsets = new ArrayList<float[]>();
 	static ArrayList<float[]> vertexsetsnorms = new ArrayList<float[]>();
@@ -46,16 +46,22 @@ public class ParserOBJ {
 	 * @return The parsed {@link Model}
 	 * @throws IOException
 	 */
-	public static Model loadModel(File file) throws IOException {
-		Model model = loadobject(file);
-		model.numpolys = faces.size();
-		vertexsets.clear();
-		vertexsetsnorms.clear();
-		vertexsetstexs.clear();
-		faces.clear();
-		facestexs.clear();
-		facesnorms.clear();
-		return model;
+	public Model parse(String fileLocation) {
+		try {
+			File file = new File(getClass().getClassLoader().getResource(fileLocation).toURI());
+			Model model = loadobject(file);
+			model.numpolys = faces.size();
+			vertexsets.clear();
+			vertexsetsnorms.clear();
+			vertexsetstexs.clear();
+			faces.clear();
+			facestexs.clear();
+			facesnorms.clear();
+			return model;
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**

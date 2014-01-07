@@ -37,9 +37,11 @@ import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-
+import org.lwjgl.opengl.GL11;
+import com.sirolf2009.syringe.client.models.Model;
 import com.sirolf2009.syringe.client.renderers.EntityRenderer;
 import com.sirolf2009.syringe.client.renderers.RenderManager;
+import com.sirolf2009.syringe.parsers.ParserFBX;
 import com.sirolf2009.syringe.util.BufferTools;
 import com.sirolf2009.syringe.util.Camera;
 import com.sirolf2009.syringe.util.EulerCamera;
@@ -78,6 +80,8 @@ public class Syringe {
 	public int FPS;
 	private int countingFPS;
 	private long lastFPS;
+	
+	Model model;
 
 	/** The constructor */
 	public Syringe() {
@@ -126,14 +130,16 @@ public class Syringe {
 //		world.addEntity(entity);
 		for(int i = 0; i < 10; i++) {
 			Entity entity2 = new EntityTest(world, new EntityRenderer("models/Human.obj"));
-			//world.addEntity(entity2);
+			world.addEntity(entity2);
 			entity2.setPosY(.1F);
 			entity2.setPosX(i);
 		}
-		EntityPlayer player = new EntityPlayer(world, new EntityRenderer("models/Human.obj"));
-		player.setPosY(1);
-		player.setPosX(10);
-		world.addEntity(player);
+		//EntityPlayer player = new EntityPlayer(world, new EntityRenderer("models/Human.obj"));
+		//player.setPosY(1);
+		//player.setPosX(10);
+		//world.addEntity(player);
+		
+		model = new ParserFBX().parse("models/testCube.fbx");
 
 		glShadeModel(GL_SMOOTH );
 		glEnable(GL_DEPTH_TEST);
@@ -170,6 +176,13 @@ public class Syringe {
 		camera.applyTranslations();
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		world.groundModel.openGLDrawTextured();
+		GL11.glPushMatrix();
+		GL11.glTranslated(0, 2, 0);
+		for(int list : model.lists.values()) {
+			GL11.glCallList(list);
+		}
+		GL11.glRotated(180, 0, 0, 1);
+		GL11.glPopMatrix();
 		renderManager.render(1);
 		renderManager.drawGUI();
 		//renderManager.drawSpecial(1 | 2);

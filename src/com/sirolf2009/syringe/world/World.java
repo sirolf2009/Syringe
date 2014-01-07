@@ -41,24 +41,8 @@ public class World {
 	
 	/** Creates a ground from models/ground.obj */
 	public void setupGround() {
-		try {
-			groundModel = ParserOBJ.loadModel(new File(getClass().getClassLoader().getResource("models/ground.obj").toURI()));
-			ground = groundModel.AABB;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			Display.destroy();
-			System.exit(1);
-		} catch (IOException e) {
-			System.err.println("Something went wrong with loading ground");
-			e.printStackTrace();
-			Display.destroy();
-			System.exit(1);
-		} catch (URISyntaxException e) {
-			System.err.println("Something went wrong with loading ground");
-			e.printStackTrace();
-			Display.destroy();
-			System.exit(1);
-		}
+		groundModel = new ParserOBJ().parse("models/ground.obj");
+		ground = groundModel.AABB;
 	}
 	
 	/** Updates all entities, then removes all dead entities */

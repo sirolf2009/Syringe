@@ -59,8 +59,6 @@ public abstract class Entity {
 		AABB = getRenderer().getModel().AABB;
 		speed = .02F;
 		rand = new Random();
-		//rotateTowards(-1, 0, -2);
-		//moveForward();
 	}
 
 	/**
@@ -76,18 +74,16 @@ public abstract class Entity {
 		getRenderer().getModel().AABB.setLocation(posX, posY, posZ);
 		Vector3f bounce;
 		if((bounce = world.groundModel.getIntersectionDistance(AABB)) != null) {
+			bounce.y += AABB.posY1;
+			bounce.y = bounce.y;
 			if(bounce.y < 0)
 				bounce.y *= -1;
 			velX *= .9;
-			posY += bounce.y;
+			posY = bounce.y;
 			velY = 0;
 			velZ *= .9;
-		} else if(posY<-0) {
-			posY = 0.1F;
 		} else {
-			//System.out.println("no collide "+posY+" "+velY);
 			velY -= 0.01F;
-			System.out.println(velY);
 		}
 		Entity colliding = checkColliding();
 		if((colliding = checkColliding()) != null) {
@@ -142,7 +138,7 @@ public abstract class Entity {
 	public void wander() {
 		if(destination == null) {
 			destination = new Vector3f(rand.nextInt(20)-10, 0, rand.nextInt(20)-10);
-			//destination = new Vector3f(-20, 0, -20);
+			//destination = new Vector3f(-8, 0, -8);
 		}
 		if(Math.round(posX) == Math.round(destination.x) && Math.round(posZ) == Math.round(destination.z)) {
 			destination = null;

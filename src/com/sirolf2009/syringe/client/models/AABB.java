@@ -49,6 +49,7 @@ public class AABB {
 		if(Math.abs(center.x - other.center.x) < width/2 + other.width/2) {
 			if(Math.abs(center.y - other.center.y) < height/2 + other.height/2) {
 				if(Math.abs(center.z - other.center.z) < depth/2 + other.depth/2) {
+					//System.out.println("intersect	"+(center.y - other.center.y) + " " + (height/2 + other.height/2));
 					return true;
 				}
 	         }
@@ -92,8 +93,18 @@ public class AABB {
 
 		//direction
 		Vector3f deltaDir = Vector3f.sub(AABB2.center, AABB1.center, null); //subtract other.position from this.position
+		deltaDir.normalise();
+		
+		Vector3f distance = new Vector3f(deltaDir.x * ox, deltaDir.y * oy, deltaDir.z * oz);
 
-		return new Vector3f(deltaDir.x * ox, deltaDir.y * oy, deltaDir.z * oz);
+//		System.out.println("Center	"+AABB2.center.y);
+//		System.out.println("yAxis	"+yAxis);
+//		System.out.println("ch	"+ch);
+//		System.out.println("oy	"+oy);
+//		System.out.println("ddir.y	"+deltaDir.y);
+//		System.out.println("dist.y	"+distance.y);
+		
+		return distance;
 	}
 	
 	/**
