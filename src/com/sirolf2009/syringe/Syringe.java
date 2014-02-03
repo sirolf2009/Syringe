@@ -38,7 +38,11 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+
+import com.sirolf2009.syringe.client.models.IModelAnimated;
 import com.sirolf2009.syringe.client.models.Model;
+import com.sirolf2009.syringe.client.models.ModelFBX;
+import com.sirolf2009.syringe.client.models.ModelStore;
 import com.sirolf2009.syringe.client.renderers.EntityRenderer;
 import com.sirolf2009.syringe.client.renderers.RenderManager;
 import com.sirolf2009.syringe.parsers.ParserFBX;
@@ -68,6 +72,7 @@ public class Syringe {
 
 	/** The rendermanager */
 	public static RenderManager renderManager;
+	public static ModelStore modelStore;
 
 	/** The world */
 	public World world;
@@ -81,7 +86,7 @@ public class Syringe {
 	private int countingFPS;
 	private long lastFPS;
 	
-	Model model;
+	Model modelFBX, modelOBJ;
 
 	/** The constructor */
 	public Syringe() {
@@ -96,11 +101,11 @@ public class Syringe {
 					lastFPS += 1000;
 				}
 				countingFPS++;
-				long newTime = System.currentTimeMillis();
-				world.update(newTime - oldTime);
-				oldTime = newTime;
+				long deltaTime = System.currentTimeMillis() - oldTime;
+				world.update(deltaTime);
+				oldTime = System.currentTimeMillis();
 				checkInput();
-				render();
+				render(deltaTime);
 				Display.update();
 				Display.sync(60);
 			}
@@ -115,6 +120,7 @@ public class Syringe {
 	/** Main init */
 	public void init() {
 		renderManager = new RenderManager(this);
+		modelStore = new ModelStore();
 		camera = new EulerCamera.Builder().setAspectRatio((float) Display.getWidth() / Display.getHeight())
 				.setRotation(0.0f, 0.0f, 0.0f).setPosition(0.0F, 1.0f, 2.0f).setFieldOfView(80).build();
 		camera.applyOptimalStates();
@@ -123,23 +129,23 @@ public class Syringe {
 		
 		lastFPS = (Sys.getTime() * 1000) / Sys.getTimerResolution();
 
-//		entity = new EntityTest(world, new EntityRendererAnimated("models/zombie/", 60));
-//		entity.setPosX(0.1F);
-//		entity.setPosY(2.1F);
-//		entity.setPosZ(0.1F);
-//		world.addEntity(entity);
+		//Entity entity = new EntityTest(world, new EntityRendererAnimated("models/zombie/", 60));
+		//entity.setPosX(0.1F);
+		//entity.setPosY(2.1F);
+		//entity.setPosZ(0.1F);
+		//world.addEntity(entity);
 		for(int i = 0; i < 10; i++) {
 			Entity entity2 = new EntityTest(world, new EntityRenderer("models/Human.obj"));
 			world.addEntity(entity2);
 			entity2.setPosY(.1F);
 			entity2.setPosX(i);
 		}
-		//EntityPlayer player = new EntityPlayer(world, new EntityRenderer("models/Human.obj"));
-		//player.setPosY(1);
-		//player.setPosX(10);
-		//world.addEntity(player);
-		
-		model = new ParserFBX().parse("models/testCube.fbx");
+		EntityPlayer player = new EntityPlayer(world, new EntityRenderer("models/Human.obj"));
+		player.setPosY(1);
+		player.setPosX(10);
+		world.addEntity(player);
+
+		modelFBX = new ParserFBX().parse("models/human.fbx");
 
 		glShadeModel(GL_SMOOTH );
 		glEnable(GL_DEPTH_TEST);
@@ -169,22 +175,24 @@ public class Syringe {
 	}
 
 	/** Clears the screen and renders the registered models */
-	private void render() {		
+	private void render(long deltaTime) {		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glEnable(GL_TEXTURE_2D);
 		glLoadIdentity();
-		camera.applyTranslations();
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		world.groundModel.openGLDrawTextured();
+		camera.applyTranslations();
+		for(IModelAnimated model : modelStore.modelsAnimated.values()) {
+			model.updateCurrentKeyFrame(deltaTime);
+		}
+		world.groundModel.render();
 		GL11.glPushMatrix();
 		GL11.glTranslated(0, 2, 0);
-		for(int list : model.lists.values()) {
-			GL11.glCallList(list);
-		}
+		modelFBX.render();
 		GL11.glRotated(180, 0, 0, 1);
 		GL11.glPopMatrix();
 		renderManager.render(1);
 		renderManager.drawGUI();
+		renderManager.drawSkybox();
 		//renderManager.drawSpecial(1 | 2);
 	}
 

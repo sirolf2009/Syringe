@@ -1,20 +1,8 @@
 package com.sirolf2009.syringe.client.models;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.lwjgl.opengl.GL11;
+import java.util.List;
 import org.lwjgl.util.vector.Vector3f;
-import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-
-import com.sirolf2009.syringe.parsers.ParserOBJ;
-
 import com.sirolf2009.syringe.collision.Material;
 
 /**
@@ -71,14 +59,8 @@ public class Model {
 	public float posY2 = 0;
 	/** The top-right Z coord of the model */
 	public float posZ2 = 0;
-
-	/** true if the model uses mtllib */
-	public boolean isTextured;
-	/** The Slick-2D texture */
-	public Texture texture;
-
-	public Map<String, Texture> textures = new HashMap<String, Texture>();
-	public Map<String, Integer> lists = new HashMap<String, Integer>();
+	
+	public List<Mesh> meshes = new ArrayList<Mesh>();
 
 	/** The {@link AABB} of the model */
 	public AABB AABB;
@@ -126,34 +108,10 @@ public class Model {
 		return numpolys;
 	}
 
-	@Deprecated
-	/** Bind the texture and draw the model
-	 *  Deprecated: Refer to {@link #openGLDrawTextured()} */
-	public void opengldraw() {
-		if(texture != null) {
-			texture.bind();
-		}
-		GL11.glCallList(objectlist);
-	}
-
 	/** Bind the texture and draw the model */
-	public void openGLDrawTextured() {
-		for(String material : lists.keySet()) {
-			if(textures.get(material) != null) {
-				textures.get(material).bind();
-			} else {
-				System.err.println("Could not find texture for material: "+material);
-				try {
-					textures.put(material, TextureLoader.getTexture("png", new FileInputStream(new File(ParserOBJ.class.getClassLoader().getResource("img/MissingTexture.png").toURI()))));
-				} catch (IOException | URISyntaxException e) {
-					e.printStackTrace();
-				}
-			}
-			if(lists.get(material) != null) {
-				GL11.glCallList(lists.get(material));
-			} else {
-				System.err.println("Could not find object list for material: "+material);
-			}
+	public void render() {
+		for(Mesh mesh : meshes) {
+			mesh.render();
 		}
 	}
 
@@ -338,6 +296,19 @@ public class Model {
 			AABB AABB = new AABB(posX1, posY1, posZ1, posX2, posY2, posZ2);
 			if(AABB.intersects(other)) {
 				return com.sirolf2009.syringe.client.models.AABB.getDistanceBetween(AABB, other);
+			}
+		}
+		return null;
+	}
+	
+	public List<Mesh> getMeshes() {
+		return meshes;
+	}
+	
+	public Mesh getMeshFromName(String name) {
+		for(Mesh mesh : meshes) {
+			if(mesh.name.equals(name)) {
+				return mesh;
 			}
 		}
 		return null;

@@ -23,6 +23,11 @@ import static org.lwjgl.opengl.GL11.glPushMatrix;
 import static org.lwjgl.opengl.GL11.glTranslated;
 import static org.lwjgl.opengl.GL11.glVertex2f;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +35,13 @@ import java.util.Map;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
 
 import com.sirolf2009.syringe.Syringe;
+import com.sirolf2009.syringe.parsers.ParserOBJ;
 import com.sirolf2009.syringe.world.entity.Entity;
+import com.sirolf2009.syringe.world.entity.EntityPlayer;
 
 /**
  * The RenderManager Class
@@ -53,6 +62,8 @@ public class RenderManager {
 	private Map<Entity, IEntityRenderer> entityRenderers = new HashMap<Entity, IEntityRenderer>();
 
 	TextRenderer text;
+	
+	private Texture skybox;
 	/**
 	 * The constructor
 	 * 
@@ -61,6 +72,11 @@ public class RenderManager {
 	public RenderManager(Syringe syringe) {
 		this.syringe = syringe;
 		text = new TextRenderer();
+		try {
+			skybox = TextureLoader.getTexture("jpg", new FileInputStream(new File(ParserOBJ.class.getClassLoader().getResource("img/skybox.jpg").toURI())));
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/** draws the HUD */
@@ -84,6 +100,83 @@ public class RenderManager {
 		text.renderText(0, 48, "FPS: "+syringe.FPS);
 		glPopMatrix();
 		setup3D();
+	}
+	
+	public void drawSkybox() {
+		EntityPlayer player = Syringe.player;
+		int offset = 0;
+		skybox.bind();
+	    GL11.glBegin(GL11.GL_QUADS);
+	        GL11.glTexCoord2f(1f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() - offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(1f, 1f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() + offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(0.0f, 1f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() + offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(0.0f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() - offset, -player.getPosZ() - offset);
+	    GL11.glEnd();
+
+	    // Back Face
+	    GL11.glBegin(GL11.GL_QUADS);
+	        GL11.glTexCoord2f(0.0f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() - offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(1f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() - offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(1f, 1f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() + offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(0.0f, 1f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() + offset, -player.getPosZ() + offset);
+	    GL11.glEnd();
+
+	    // Top Face
+	    GL11.glBegin(GL11.GL_QUADS);
+	        GL11.glTexCoord2f(1f, 1f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() - offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(0.0f, 1f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() - offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(0.0f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() - offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(1f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() - offset, -player.getPosZ() + offset);
+	    GL11.glEnd();
+
+	    // Bottom Face
+	    GL11.glBegin(GL11.GL_QUADS);
+	        GL11.glTexCoord2f(1f, 0f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() + offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(1f, 1f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() + offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(0f, 1f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() + offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(0f, 0f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() + offset, -player.getPosZ() - offset);
+	    GL11.glEnd();
+
+
+	    // Right face
+	    GL11.glBegin(GL11.GL_QUADS);
+	        GL11.glTexCoord2f(0.0f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() - offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(1f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() - offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(1f, 1f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() + offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(0.0f, 1f);
+	        GL11.glVertex3f(-player.getPosX() - offset, -player.getPosY() + offset, -player.getPosZ() - offset);
+	    GL11.glEnd();
+
+	    // Left Face
+	    GL11.glBegin(GL11.GL_QUADS);
+	        GL11.glTexCoord2f(1f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() - offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(1f, 1f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() + offset, -player.getPosZ() - offset);
+	        GL11.glTexCoord2f(0.0f, 1f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() + offset, -player.getPosZ() + offset);
+	        GL11.glTexCoord2f(0.0f, 0.0f);
+	        GL11.glVertex3f(-player.getPosX() + offset, -player.getPosY() - offset, -player.getPosZ() + offset);
+	    GL11.glEnd();
 	}
 
 	/** Sets OpenGL up to render 2D */

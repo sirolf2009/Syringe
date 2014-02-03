@@ -44,7 +44,7 @@ public class ModelRenderAnimated implements IModelRenderer {
 
 	@Override
 	public void renderModel() {
-		animation.get(currentFrame).openGLDrawTextured();
+		animation.get(currentFrame).render();
 		currentFrame++;
 		if(currentFrame > frames) {
 			currentFrame = 0;

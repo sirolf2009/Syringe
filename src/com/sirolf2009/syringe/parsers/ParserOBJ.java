@@ -22,6 +22,7 @@ import org.newdawn.slick.opengl.TextureLoader;
 
 import com.sirolf2009.syringe.client.models.AABB;
 import com.sirolf2009.syringe.client.models.Model;
+import com.sirolf2009.syringe.client.models.ModelOBJ;
 
 /**
  * The parserOBJ Class
@@ -46,10 +47,10 @@ public class ParserOBJ implements IParser {
 	 * @return The parsed {@link Model}
 	 * @throws IOException
 	 */
-	public Model parse(String fileLocation) {
+	public ModelOBJ parse(String fileLocation) {
 		try {
 			File file = new File(getClass().getClassLoader().getResource(fileLocation).toURI());
-			Model model = loadobject(file);
+			ModelOBJ model = loadobject(file);
 			model.numpolys = faces.size();
 			vertexsets.clear();
 			vertexsetsnorms.clear();
@@ -57,6 +58,7 @@ public class ParserOBJ implements IParser {
 			faces.clear();
 			facestexs.clear();
 			facesnorms.clear();
+			model.createMeshes();
 			return model;
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
@@ -71,9 +73,8 @@ public class ParserOBJ implements IParser {
 	 * @return The parsed {@link Model}
 	 */
 	@SuppressWarnings("unchecked")
-	private static Model loadobject(File file) {
-
-		Model model = new Model();
+	private static ModelOBJ loadobject(File file) {
+		ModelOBJ model = new ModelOBJ();
 		int linecounter = 0;
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -249,7 +250,7 @@ public class ParserOBJ implements IParser {
 	 * @param file - The OBJ file
 	 * @param model - The model the MTL will be applied to
 	 */
-	private static void parseMTL(File file, Model model) {
+	private static void parseMTL(File file, ModelOBJ model) {
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new FileReader(file));
@@ -334,12 +335,15 @@ public class ParserOBJ implements IParser {
 					float textempy = ((float[])vertexsetstexs.get(tempfacestexs[w] - 1))[1];
 					float textempz = ((float[])vertexsetstexs.get(tempfacestexs[w] - 1))[2];
 					GL11.glTexCoord3f(textempx,1f-textempy,textempz);
+					//System.out.println("vt "+textempx+", "+(1f-textempy)+", "+textempz);
 				}
 
 				float tempx = ((float[])vertexsets.get(tempfaces[w] - 1))[0];
 				float tempy = ((float[])vertexsets.get(tempfaces[w] - 1))[1];
 				float tempz = ((float[])vertexsets.get(tempfaces[w] - 1))[2];
 				GL11.glVertex3f(tempx,tempy,tempz);
+
+				//System.out.println("v  "+tempx+", "+tempy+", "+tempz);
 			}
 
 			GL11.glEnd();
